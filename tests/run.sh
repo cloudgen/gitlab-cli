@@ -1,6 +1,6 @@
 #!/bin/sh
 # =============================================================================
-# tests/run.sh — CI entrypoint for gitlab-nginx
+# tests/run.sh — CI entrypoint for gitlab-cli
 # =============================================================================
 #
 # GENERAL PURPOSE:
@@ -21,7 +21,7 @@ set -u
 TESTS_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 REPO_ROOT=$(CDPATH= cd -- "${TESTS_ROOT}/.." && pwd)
 export TESTS_ROOT REPO_ROOT
-SCRIPT="${REPO_ROOT}/gitlab-nginx"
+SCRIPT="${REPO_ROOT}/gitlab-cli"
 export SCRIPT
 
 # shellcheck source=helpers.sh
@@ -43,7 +43,7 @@ _cleanup() {
 }
 trap _cleanup EXIT INT HUP TERM
 
-printf 'gitlab-nginx CI tests (Type 0 + domain)\n'
+printf 'gitlab-cli CI tests (Type 0 + domain)\n'
 printf 'script: %s\n' "${SCRIPT}"
 
 if [ ! -f "${SCRIPT}" ]; then

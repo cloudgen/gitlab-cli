@@ -4,16 +4,14 @@
 
 | Version | Supported |
 |---------|-----------|
-| **2.5.3** (current) | Yes — full support |
-| **2.5.2** / **2.5.1** / **2.5.0** / **2.4.x** | Superseded; upgrade to current when possible |
-| **2.3.x** | Security fixes only; upgrade recommended |
-| **2.2.x** and older | Best-effort only; upgrade recommended |
+| **1.0.0** (current) | Yes — full support |
+| gitlab-nginx 2.x lineage | Not this product; this CLI is a stripped GitLab-operator fork |
 
 ## Reporting a Vulnerability
 
 Please **do not** open a public issue for security-sensitive reports when a private channel is available.
 
-**Maintainer contact (email):** `wilgat.wong@gmail.com`
+**Maintainer contact (email):** `wongcf22@gmail.com`
 
 - Source of contact: product **author-email** SSOT in [`LICENSE.md`](./LICENSE.md) (Copyright line).
 - Prefer email for vulnerability details, reproduction steps, and impact.
@@ -28,10 +26,10 @@ This project follows **[CIAO](https://github.com/cloudgen/ciao)** / **CIAO-Lite*
 
 | Letter | Principle | Security application |
 |--------|-----------|----------------------|
-| **C** | **Caution** | Assume hostile input, hostile networks, and misconfiguration. Validate install paths and privilege boundaries; fail closed on integrity **mismatch** when a companion digest is present. Domain host setup requires root deliberately. |
-| **I** | **Intentional** | Self-management as yourself, channel URL (`SCRIPT_URL`), automatic companion-checksum, and domain verbs (`run`, `nginx-conf`, `remove-lpu`, …) are deliberate. Prefer clear “why” over silent magic. |
+| **C** | **Caution** | Assume hostile input. Validate usernames passed to `gitlab-rails`. Fail closed when not root. Fail closed on integrity **mismatch** when a companion digest is present. Password reset does not print the new password. |
+| **I** | **Intentional** | Self-management as yourself, channel URL (`SCRIPT_URL`), automatic companion-checksum, and GitLab operator verbs (`list-users`, `reset-password`, `status`, `setup`, `remove-lpu`) are deliberate. Prefer clear “why” over silent magic. |
 | **A** | **Anti-fragile** | Survive harsh environments (minimal containers, non-interactive `curl \| sh`). Prefer transparent automatic SHA-256 sidecar checks, least privilege for day-to-day CLI use, and recoverable failure over brittle trust. |
-| **O** | **Over-protect** | Defense in depth on critical paths (integrity verify before install/update when designed, dual least-privilege `nginx-adm` / `gitlab-adm` models, loud failure). Do not “simplify away” safety for brevity. |
+| **O** | **Over-protect** | Defense in depth on critical paths (integrity verify before install/update when designed, `gitlab-adm` least-privilege, loud failure). Do not “simplify away” safety for brevity. |
 
 Full principles: [CIAO Defensive Programming](https://github.com/cloudgen/ciao) · agent contract: [CIAO-Lite](https://github.com/cloudgen/ciao-lite).
 
@@ -39,26 +37,22 @@ This section describes **design posture**. It is **not** a claim of third-party 
 
 ## Install integrity and trust
 
-`gitlab-nginx` implements the **automatic checksum mechanism**: when `CHECKSUM` is unset, install/self-update attempts to fetch a companion digest next to the install artifact (`${SCRIPT_URL}.sha256`).
+When this product implements the **automatic checksum mechanism** (program fetches a companion digest next to the install artifact):
 
-| Mode | Behavior (summary) |
-|------|--------------------|
-| Automatic (default) | Fetch companion SHA-256; on **match** proceed; on **mismatch** fail closed; if sidecar **missing**, warn and continue (channel consistency only) |
-| Strict pin | `CHECKSUM=<64-hex>` env forces equality with downloaded bytes; mismatch aborts |
+| Fact | Honest statement |
+|------|------------------|
+| **Default path** | Automatic companion verification (`${SCRIPT_URL}.sha256`) when no operator pin is set — **no** env pin required for normal install/self-update. |
+| **Algorithm** | SHA-256 (`sha256sum`). |
+| **Transparency** | Human mode is designed to show companion **link**, expected **value**, and verification **result** (match / mismatch / missing). |
+| **Mismatch** | Abort — do not install mismatched bytes. |
+| **Missing sidecar** | Warning, then continue (best-effort). Never claim “always verified”. |
+| **Optional pin** | Process-env `CHECKSUM` is **secondary** (CI / out-of-band freeze). It is **not** stronger than automatic mode when the pin is fetched from the **same origin**. Do **not** advertise it in `help` / `about`. |
+| **Trust bound** | Same-channel SHA-256 proves **byte consistency**. It is **not** independent authenticity (signing / separate trust root) by itself. |
 
-Trust bounds: same-channel companion digests prove **consistency** of the two files on that channel. They are **not** a substitute for signed releases or out-of-band verification of the channel itself.
-
-Optional CI / operator pin:
-
-```bash
-CHECKSUM=<sha256-of-script> curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx | sh
-```
-
-## Domain / host setup privilege
-
-Commands that mutate the host (`run`, `nginx-conf`, `ssh-hostname`, `remove-lpu`, and related paths) **require root**. Non-root invocation must fail closed (not partially reconfigure the system). Lifecycle (`install`, `version`, `about`, `self-update`, `self-uninstall`) remains usable without root for user-local installs. `remove-lpu` is **not** `self-uninstall` (CLI binary only).
+Operator-facing install steps live in [`README.md`](./README.md).
 
 ## Scope notes
 
-- This product installs and configures **GitLab CE**, **Certbot**, and **external Nginx** when domain setup is run — treat those ecosystems’ own advisories as applicable.
-- Report security issues in **this** script’s install, integrity, privilege, or configuration generation paths to the maintainer contact above.
+- Preferred languages for reports: English.
+- Out of scope: social engineering of third parties, physical attacks, spam.
+- Related product docs: [`README.md`](./README.md), [`LICENSE.md`](./LICENSE.md).

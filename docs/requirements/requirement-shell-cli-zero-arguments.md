@@ -4,11 +4,11 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth** for **zero-argument (empty argv) dispatcher behavior** of the gitlab-nginx POSIX `/bin/sh` Type 0 CLI.
+This requirement is the **project Single Source of Truth** for **zero-argument (empty argv) dispatcher behavior** of the gitlab-cli POSIX `/bin/sh` Type 0 CLI.
 
 ### 1.0 Product type (template dual-model)
 
-| Field | Value for gitlab-nginx |
+| Field | Value for gitlab-cli |
 |-------|------------------------|
 | **Empty-argv type** | **Type O — Online-install** (not Type N) |
 | **Rationale** | Product advertises `curl … \| sh` one-liner install; empty argv is install-ensure, not help |
@@ -18,7 +18,7 @@ Type N (non-online-install → empty argv = help) does **not** apply to this pro
 It defines what happens when the tool is invoked with **no command and no flags**, including the classic one-liner:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx | /bin/sh
+curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli | /bin/sh
 ```
 
 Empty argv means **install-ensure** for three detect cases:
@@ -26,21 +26,21 @@ Empty argv means **install-ensure** for three detect cases:
 | Case | Meaning |
 |------|---------|
 | **Not installed** | No managed binary at the resolved install path(s) |
-| **Installed (local)** | Managed binary at the user path (`USER_BIN` / `${HOME}/.local/bin/gitlab-nginx`) |
-| **Installed (global)** | Managed binary at the global path (`GLOBAL_BIN` / `/usr/local/bin/gitlab-nginx`) |
+| **Installed (local)** | Managed binary at the user path (`USER_BIN` / `${HOME}/.local/bin/gitlab-cli`) |
+| **Installed (global)** | Managed binary at the global path (`GLOBAL_BIN` / `/usr/local/bin/gitlab-cli`) |
 
 **Scope:** Empty-argv routing, detect cases (global / local / absent), messages, force boundary, exit status, interaction with TTY / quiet / json.  
 **Out of scope (own requirements):** Full command catalog (`requirement-shell-cli-interface.md`); download/checksum detail (`requirement-shell-automatic-checksum.md`); full self-update/uninstall lifecycle (`requirement-shell-self-management.md`); output function catalog (`requirement-shell-output-requirements.md`); general idempotency matrix beyond empty-argv rows (`requirement-shell-idempotency.md`).
 
 ### 1.1 Human-facing
 
-**In one sentence:** Running `gitlab-nginx` with **no arguments** installs this program (or reports it is already installed). It does **not** show help and does **not** set up GitLab.
+**In one sentence:** Running `gitlab-cli` with **no arguments** installs this program (or reports it is already installed). It does **not** show help and does **not** set up GitLab.
 
 | Box | Meaning | Example |
 |-----|---------|---------|
 | You / this login | Pipe or empty argv means “put the program on my PATH” | `curl … \| sh` |
 | The other role | Root empty argv installs globally | `sudo curl … \| sudo sh` |
-| Not this file | `sudo gitlab-nginx run` (GitLab host setup) | domain requirement |
+| Not this file | `sudo gitlab-cli run` (GitLab host setup) | domain requirement |
 
 | Includes | Excludes |
 |----------|----------|
@@ -49,12 +49,12 @@ Empty argv means **install-ensure** for three detect cases:
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `gitlab-nginx` (no args) | command | install-ensure |
-| `gitlab-nginx help` | command | full usage (explicit only) |
+| `gitlab-cli` (no args) | command | install-ensure |
+| `gitlab-cli help` | command | full usage (explicit only) |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| First install via pipe | The one-liner has no extra words after `sh`. That empty argv is the install contract. | `curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx \| sh` |
+| First install via pipe | The one-liner has no extra words after `sh`. That empty argv is the install contract. | `curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli \| sh` |
 
 ---
 
@@ -62,23 +62,26 @@ Empty argv means **install-ensure** for three detect cases:
 
 ### 2.1 Definitions (portable + project)
 
-| Term | Definition for gitlab-nginx |
+| Term | Definition for gitlab-cli |
 |------|----------------------------|
 | **Type O** | Online-install empty-argv product type: empty argv = install-ensure (this product). |
-| **Type N** | Non-online-install empty-argv type: empty argv = help — **out of scope** for gitlab-nginx. |
+| **Type N** | Non-online-install empty-argv type: empty argv = help — **out of scope** for gitlab-cli. |
 | **Empty argv / zero-arg** | `$# -eq 0` at entry to `app_main` (no command tokens; classic `curl \| sh` with no trailing args). |
-| **Install-ensure** | Converge to “managed `gitlab-nginx` binary present”; either perform install or success no-op. |
+| **Install-ensure** | Converge to “managed `gitlab-cli` binary present”; either perform install or success no-op. |
 | **Not installed** | `inst_is_installed` returns false (`inst_get_version` → `not installed`). |
-| **Installed (local)** | Executable at `${USER_BIN}/gitlab-nginx` (default `USER_BIN=${HOME}/.local/bin`) observed by install-detect SSOT. |
-| **Installed (global)** | Executable at `${GLOBAL_BIN}/gitlab-nginx` (default `GLOBAL_BIN=/usr/local/bin`) observed by install-detect SSOT. |
+| **Installed (local)** | Executable at `${USER_BIN}/gitlab-cli` (default `USER_BIN=${HOME}/.local/bin`) observed by install-detect SSOT. |
+| **Installed (global)** | Executable at `${GLOBAL_BIN}/gitlab-cli` (default `GLOBAL_BIN=/usr/local/bin`) observed by install-detect SSOT. |
 | **Force / reinstall** | `FORCE_REINSTALL=1` from `--force` (and related force wiring in `app_main`). Required only for deliberate replace, not for ensure. |
 
 ### 2.2 Single meaning of empty argv
 
-1. When **argv is empty**, `app_main` **MUST** run **install-ensure** — **MUST NOT** route to `app_help` / default `COMMAND=help`.  
-2. Explicit `gitlab-nginx help` remains the only full-usage path for help text.  
-3. Bootstrap **MUST** always call `app_main "$@"` so pipe one-liners reach this contract (no `${0##*/}` product-name gate).  
-4. Empty argv **MUST NOT** require the user to pass `install` or `install --force` merely because a previous ensure already succeeded.
+1. Empty argv is **no command token after flag parse** (overlay `--debug` / `--quiet` with no command still count).  
+2. When **`--json`** is set and there is **no command**, empty argv **MUST** be JSON help (`app_help`) — **MUST NOT** install-ensure and **MUST NOT** draw the numbered list.  
+3. When **TTY=1** and JSON is off, empty argv **MUST** route to the numbered list (`app_main_menu`). Topic owner: `requirement-shell-cli-default-interaction`.  
+4. When **TTY=0** and JSON is off, empty argv **MUST** run **install-ensure** — **MUST NOT** route to `app_help` and **MUST NOT** draw the numbered list.  
+5. Explicit `gitlab-cli help` remains a full-usage path.  
+6. Bootstrap **MUST** always call `app_main "$@"` so pipe one-liners reach this contract (no `${0##*/}` product-name gate).  
+7. Off-TTY empty argv **MUST NOT** require `--force` merely because a previous ensure already succeeded.
 
 ### 2.3 Normative case matrix
 
@@ -100,17 +103,18 @@ Empty argv means **install-ensure** for three detect cases:
 
 | Mode | Required empty-argv behavior |
 |------|------------------------------|
-| **Interactive** (TTY stdin+stdout, not quiet/json) | `inst_maybe_install`: note + `prompt_yes_no`; yes → `inst_perform_install`; no → skip without help dump |
-| **Non-interactive** (non-TTY / `curl \| sh`) | Auto-install message + `inst_perform_install` (via `inst_maybe_install` non-TTY branch) |
-| **Quiet or JSON** | `inst_perform_install` directly (no prompt) |
-| **Failure** (network, checksum, I/O) | Non-zero exit; no fake success; no help-only output |
+| **Interactive** (TTY stdin+stdout, not json) | Numbered list (`app_main_menu`). **MUST NOT** install-ensure on this path |
+| **Non-interactive** (non-TTY / `curl \| sh`) | Auto-install message + `inst_perform_install` (via `inst_maybe_install` when not installed) |
+| **Quiet and off-TTY** | `inst_perform_install` directly (no prompt) |
+| **`--json` no command** | JSON help (TTY and off-TTY) |
+| **Failure** (network, checksum, I/O) off-TTY | Non-zero exit; no fake success; no help-only output |
 
 **Placement privilege:**
 
 | Invoker | Target |
 |---------|--------|
-| root (`id -u` 0), e.g. `curl … \| sudo sh` | `${GLOBAL_BIN}/gitlab-nginx` → `/usr/local/bin/gitlab-nginx` |
-| non-root | `${USER_BIN}/gitlab-nginx` → `${HOME}/.local/bin/gitlab-nginx` |
+| root (`id -u` 0), e.g. `curl … \| sudo sh` | `${GLOBAL_BIN}/gitlab-cli` → `/usr/local/bin/gitlab-cli` |
+| non-root | `${USER_BIN}/gitlab-cli` → `${HOME}/.local/bin/gitlab-cli` |
 
 ### 2.5 Equivalence to explicit `install`
 
@@ -132,11 +136,11 @@ Empty argv means **install-ensure** for three detect cases:
 
 ### 2.7 Implementation Notes (this project)
 
-| Item | Value for gitlab-nginx |
+| Item | Value for gitlab-cli |
 |------|------------------------|
 | **Empty-argv type** | **Type O — Online-install** (install-ensure; not Type N help-default) |
-| **Product / binary** | `gitlab-nginx` (`APP_NAME`) |
-| **Ship unit** | Repo root `./gitlab-nginx` |
+| **Product / binary** | `gitlab-cli` (`APP_NAME`) |
+| **Ship unit** | Repo root `./gitlab-cli` |
 | **Dispatcher** | `app_main` — empty-argv block **before** flag/command parse default help |
 | **Install ensure** | `inst_perform_install` (quiet/json and already-installed no-op) |
 | **Friendly first install** | `inst_maybe_install` (TTY confirm / non-TTY auto) when not installed and not quiet/json |
@@ -237,7 +241,7 @@ This requirement is satisfied when all of the following hold:
 | `docs/requirements/requirement-shell-self-management.md` | self-update / uninstall (not empty-argv default) |
 | `docs/requirements/requirement-shell-output-requirements.md` | out_* / JSON purity |
 | `docs/requirements/requirement-shell-automatic-checksum.md` | Integrity on install download path |
-| Repo root `./gitlab-nginx` | Implementation (`app_main`, `inst_*`) |
+| Repo root `./gitlab-cli` | Implementation (`app_main`, `inst_*`) |
 | `tests/test_cli.sh`, `tests/test_install_lifecycle.sh` | Regression coverage |
 
 ---
@@ -268,6 +272,6 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 **Map:** `reviews/test-plan.md`.
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).
 

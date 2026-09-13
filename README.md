@@ -1,64 +1,64 @@
-# gitlab-nginx - GitLab CE with external Nginx and Let's Encrypt
+# gitlab-cli - GitLab operator CLI (list users, reset passwords)
 
-![Version](https://img.shields.io/badge/Version-2.5.3-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20(Caution%20%E2%80%A2%20Intentional%20%E2%80%A2%20Anti--fragile%20%E2%80%A2%20Over--engineered)-purple.svg)](https://github.com/cloudgen/ciao)
-[![Stars](https://img.shields.io/github/stars/Wilgat/gitlab-nginx?style=flat-square)](https://github.com/Wilgat/gitlab-nginx)
+[![Stars](https://img.shields.io/github/stars/cloudgen/gitlab-cli?style=flat-square)](https://github.com/cloudgen/gitlab-cli)
 [![Shell](https://img.shields.io/badge/Shell-POSIX%20sh-orange?style=flat-square)]()
 
-You put one program file (`gitlab-nginx`) on a Linux server, then run `sudo gitlab-nginx run` so **GitLab Community Edition** sits behind **Nginx you control**, with free **Let's Encrypt** certificates.
+You put one program file (`gitlab-cli`) on a Linux host that already runs **GitLab Omnibus**, then use it as yourself for install/update, and as root for **list users**, **reset a user password**, and **gitlab-ctl status**. This is **not** the old gitlab-nginx installer: it does **not** install external Nginx, Certbot, or Let's Encrypt.
 
 | Who | Meaning | Example |
 |-----|---------|---------|
-| **You** | A person with a domain pointing at the server. You can install this program as yourself. Full GitLab setup needs a root login. | `curl … \| sh` then `sudo gitlab-nginx run` |
-| **The other role** | After setup, dedicated accounts `nginx-adm` and `gitlab-adm` own day-to-day Nginx/GitLab files — not your daily login. | `remove-lpu` tears those accounts down |
-| **Not this** | GitLab’s bundled Nginx, a package-manager-only GitLab install, or a numbered main menu. Empty `gitlab-nginx` means **install this program**, not “set up GitLab”. | `gitlab-nginx` with no arguments |
+| **You** | A person who can install this program as yourself. GitLab operator commands need a root login. | `curl … \| sh` then `sudo gitlab-cli list-users` |
+| **The other role** | After `setup`, dedicated account `gitlab-adm` owns GitLab config under `/etc/gitlab-adm` — not your daily login. | `remove-lpu` tears that account down |
+| **Not this** | External Nginx, Certbot, domain files, or Cloudflare SSH hostname. Empty `gitlab-cli` on a **pipe** means **install this program**. On a **real terminal**, empty argv opens the **numbered list**. | `gitlab-cli` with no arguments |
 
 | Includes | Excludes |
 |----------|----------|
-| External Nginx, Certbot standalone certificates, Cloudflare-aware SSH hostname | Using GitLab’s bundled Nginx as the public server |
-| Install for yourself (`~/.local/bin`) or for everyone (`/usr/local/bin`) | Treating empty argv as help or as full GitLab setup |
+| List GitLab users; reset a password from a numbered user list; `gitlab-ctl status` | External Nginx reverse proxy, Certbot, `nginx-conf`, `domains`, `email` |
+| Install for yourself (`~/.local/bin`) or for everyone (`/usr/local/bin`) | Treating empty argv in a pipe as help or as a GitLab mutate |
 | Automatic SHA-256 companion check on download | Requiring a `CHECKSUM=` pin for every install |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Install the program | Downloads `gitlab-nginx` and places it on your PATH. Does **not** install GitLab yet. | `curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx \| sh` |
-| Set up GitLab | Interactive 13-step host setup (packages, certificates, GitLab, external Nginx). Needs a terminal and root. | `sudo gitlab-nginx run` |
-| Inspect later | Show saved domains, email, or diagnostics without re-running setup. | `gitlab-nginx about` · `gitlab-nginx domains` |
+| Install the program | Downloads `gitlab-cli` and places it on your PATH. Does **not** change GitLab yet. | `curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli \| sh` |
+| Open the numbered list | On a real terminal, no arguments (or `menu`) shows live work commands. A wrong number reprints the list. | `gitlab-cli` |
+| List or reset users | Needs root and Omnibus `gitlab-rails`. Reset always lists users first on a terminal. | `sudo gitlab-cli list-users` |
 
 This project follows [CIAO](https://github.com/cloudgen/ciao) (Caution • Intentional • Anti-fragile • Over-engineered).
 
 ## Features
 
 - **Self-installing program file** — user-local (`~/.local/bin`) or global (`/usr/local/bin`)
-- **Automatic SHA-256 companion check** — the program fetches `gitlab-nginx.sha256` itself (no env pin required)
-- **Dedicated operator accounts** after setup: `nginx-adm` (external Nginx) and `gitlab-adm` (GitLab config under `/etc/gitlab-adm`)
-- **`remove-lpu`** — remove those dedicated accounts (`userdel -r`); this is not “uninstall the CLI”
-- **External Nginx** you control (Cloudflare-friendly real-IP map unless `--no-cloudflare`)
-- **Let's Encrypt** via standalone mode before GitLab is brought up
-- **Separate GitLab SSH hostname** when the web domain is Cloudflare-proxied (port 22)
+- **Automatic SHA-256 companion check** — the program fetches `gitlab-cli.sha256` itself (no env pin required)
+- **Numbered main menu** on a real terminal (empty argv or `menu` / `main`); a wrong choice reprints the list
+- **`list-users`** — print GitLab users via `gitlab-rails runner`
+- **`reset-password`** — numbered GitLab user list first, then set a new password
+- **`status`** — `gitlab-ctl status`
+- **`setup` / `remove-lpu`** — `gitlab-adm` least-privilege operator only (no `nginx-adm`)
 - **Safe to re-run** install and ensure-style steps
 - **Idempotent CLI lifecycle** — `version-check`, `self-update`, `self-uninstall`
 
 ## Quick Installation
 
-Install the program (does not install GitLab):
+Install the program (does not change GitLab):
 
 ```bash
-# For yourself → ~/.local/bin/gitlab-nginx
-curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx | sh
+# For yourself → ~/.local/bin/gitlab-cli
+curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli | sh
 ```
 
 ```bash
-# For everyone → /usr/local/bin/gitlab-nginx
-sudo curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx | sudo sh
+# For everyone → /usr/local/bin/gitlab-cli
+sudo curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli | sudo sh
 ```
 
 The channel URL is the product default (`SCRIPT_URL`). Override that env only if you fork the channel.
 
 ### Integrity (automatic SHA-256)
 
-When you do **not** set `CHECKSUM`, the program downloads the companion digest itself from `${SCRIPT_URL}.sha256` (in-repo file: `gitlab-nginx.sha256`). Human mode is designed to show the **link** (companion URL), the **value** (expected digest), and the **result**.
+When you do **not** set `CHECKSUM`, the program downloads the companion digest itself from `${SCRIPT_URL}.sha256` (in-repo file: `gitlab-cli.sha256`). Human mode is designed to show the **link** (companion URL), the **value** (expected digest), and the **result**.
 
 | Outcome | What happens |
 |---------|----------------|
@@ -68,88 +68,94 @@ When you do **not** set `CHECKSUM`, the program downloads the companion digest i
 
 Algorithm: **SHA-256** (`sha256sum`). Same-channel companion files prove the two files on that channel match. They are not a substitute for signed releases.
 
-### After install — set up GitLab
+### After install — numbered list
 
-Needs an interactive terminal and root:
+On a **real terminal**, running with **no arguments** (or `gitlab-cli menu`) opens the numbered list of live work commands. Install, setup, version, about, help, and self-update are **not** on this list — they stay on `help`. Choose a number or a command name. A wrong number prints an error and **shows the list again**. `9` exits.
 
-```bash
-sudo gitlab-nginx run
+```text
+$ gitlab-cli
+[INFO] **gitlab-cli**(*1.0.0*) — numbered list of live work commands
+1. list-users: List GitLab users
+2. reset-password: Reset a GitLab user password (numbered list first)
+3. status: Show gitlab-ctl status
+4. remove-lpu: Remove gitlab-adm (confirm or --force)
+9. Exit
 ```
 
-Empty `gitlab-nginx` (no arguments) only **installs or re-checks this program**. It does not start GitLab setup.
+Choose a number, or type the command name. `9` exits.
+
+A **pipe** (`curl | sh`) with no arguments still **installs this program**. It does not open the list and does not mutate GitLab.
 
 ### Advanced: optional digest pin (CI)
 
-Optional process env — **not** listed in `help` / `about`, **not** the primary newcomer path. Paste the current `gitlab-nginx.sha256` hex (do not copy a stale hash from old docs):
+Optional process env — **not** listed in `help` / `about`, **not** the primary newcomer path. Paste the current `gitlab-cli.sha256` hex (do not copy a stale hash from old docs):
 
 ```bash
-CHECKSUM=<64-hex-from-gitlab-nginx.sha256> \
-  curl -fsSL https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx | sh
+CHECKSUM=<64-hex-from-gitlab-cli.sha256> \
+  curl -fsSL https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli | sh
 ```
 
-Regenerate the in-repo companion after editing `./gitlab-nginx`: `sha256sum gitlab-nginx | cut -d' ' -f1 > gitlab-nginx.sha256`. Do not paste a same-origin `CHECKSUM=$(curl …sha256)` as “higher assurance” than automatic mode.
+Regenerate the in-repo companion after editing `./gitlab-cli`: `sha256sum gitlab-cli | cut -d' ' -f1 > gitlab-cli.sha256`. Do not paste a same-origin `CHECKSUM=$(curl …sha256)` as “higher assurance” than automatic mode.
 
 ## Usage
 
 ```text
-gitlab-nginx [command] [options]
+gitlab-cli [command] [options]
 ```
 
 | Command | Who may run it | What it does |
 |---------|----------------|--------------|
-| *(no arguments)* | You | Install or re-check this program |
+| *(no arguments, real terminal)* | You | Numbered list of live work commands |
+| *(no arguments, pipe / script)* | You | Install or re-check this program |
+| `menu` (alias `main`) | You | Same numbered list on a terminal; help in a script |
 | `install` | You (root → global path) | Place the CLI binary |
 | `version` | You | Print version |
-| `about` | You | Diagnostics (install + cache/persistence folders + domain files) |
+| `about` | You | Diagnostics (install + cache/persistence folders + GitLab tools) |
 | `help` | You | Full usage |
 | `version-check` | You | Compare local vs channel version |
 | `self-update` | You | Update this program from the channel |
-| `self-uninstall` | You | Remove this program (not GitLab, not `nginx-adm`) |
-| `run` (alias `setup`) | Root | Full interactive GitLab + Nginx setup |
-| `domains` | You (read) | Show saved domains |
-| `email` | You (read) | Show saved Let's Encrypt email |
-| `ssh-hostname` | Root | Show or set GitLab SSH hostname |
-| `nginx-conf` | Root | Regenerate external Nginx config |
-| `remove-lpu` | Root | Remove dedicated `nginx-adm` / `gitlab-adm` accounts (`nginx` \| `gitlab` \| `all`) |
+| `self-uninstall` | You | Remove this program (not GitLab, not `gitlab-adm`) |
+| `list-users` | Root | List GitLab users |
+| `reset-password [user]` | Root | Numbered user list first (terminal), then reset that password |
+| `status` | Root | `gitlab-ctl status` |
+| `setup` | Root | Create `gitlab-adm` (no Nginx) |
+| `remove-lpu` | Root | Remove `gitlab-adm` (`userdel -r`) |
 
-**Global options:** `--quiet` / `-q`, `--json`, `--force`, `--debug`, `--no-cloudflare`
+**Global options:** `--quiet` / `-q`, `--json`, `--force` (`--reset` / `--reinstall` same), `--debug`
 
-**Environment (listed in help):** `REPO_USER`, `REPO_NAME`, `SCRIPT_URL`. `CHECKSUM` is an install-path pin only — not a help/about field.
-
-There is **no numbered main menu**. Choose a command name (or a number is not offered).
+**Environment (listed in help):** `REPO_USER`, `REPO_NAME`, `SCRIPT_URL`. `CHECKSUM` is an install-path pin only — not a help/about field. Non-interactive password reset uses process env `GITLAB_NEW_PASSWORD` (not listed in help).
 
 ## Examples
 
 ```bash
-gitlab-nginx version
-gitlab-nginx about
-gitlab-nginx --json about
-sudo gitlab-nginx run
-gitlab-nginx domains
-sudo gitlab-nginx nginx-conf
-sudo gitlab-nginx remove-lpu all --force
-gitlab-nginx help
+gitlab-cli version
+gitlab-cli about
+gitlab-cli --json about
+gitlab-cli menu
+sudo gitlab-cli list-users
+sudo gitlab-cli reset-password
+sudo gitlab-cli status
+sudo gitlab-cli setup
+sudo gitlab-cli remove-lpu --force
+gitlab-cli help
 ```
-
-Client SSH when the web domain is Cloudflare-proxied: the program prints a `~/.ssh/config` snippet at the end of interactive `run` (use the **SSH hostname**, not the proxied web domain, for `git@…`).
 
 ## Platform Compatibility
 
 | Surface | Status |
 |---------|--------|
-| Ubuntu 20.04 / 22.04 / 24.04 (fresh server) | Supported for full GitLab setup |
+| Ubuntu 20.04 / 22.04 / 24.04 with Omnibus GitLab | Supported for list-users / reset-password / status |
 | Other Debian-based Linux with `/bin/sh`, `curl` or `wget`, `sha256sum` | CLI install and self-update |
-| Ports 80 and 443 reachable; DNS A/AAAA for your domains | Required for certificates + GitLab |
-| Termux / Git Bash / Windows Command Prompt | CLI self-install as yourself only — no GitLab host setup, no dedicated system users, no `sudo curl \| sh` |
-| macOS / non-Linux as a GitLab host | Not claimed |
+| Termux / Git Bash / Windows Command Prompt | CLI self-install as yourself only — no GitLab host mutate, no dedicated system users, no `sudo curl \| sh` |
+| Host without Omnibus `gitlab-rails` / `gitlab-ctl` | Operator verbs fail closed with a next step |
 
-Full setup needs a TTY. Non-interactive `run` only does package install + service stop and then tells you to run `sudo gitlab-nginx run` on a terminal.
+Full GitLab operator verbs need root. Non-interactive `reset-password` needs a username operand (and `GITLAB_NEW_PASSWORD`); it does not hang.
 
 ## Related Projects
 
 - [CIAO](https://github.com/cloudgen/ciao) — defensive programming philosophy this CLI follows
 - [selfmanaged](https://github.com/cloudgen/selfmanaged) — Type 0 bootstrap this product specialized from (install / version-check / self-update / self-uninstall)
-- Independent review notes: [RECOMMENDATION.md](RECOMMENDATION.md)
+- Origin product (external Nginx + GitLab): [gitlab-nginx](https://github.com/Wilgat/gitlab-nginx) — this CLI **strips** that Nginx surface
 
 ## Contributing
 
@@ -161,4 +167,4 @@ MIT License. See [LICENSE.md](LICENSE.md).
 
 ## Last Update
 
-2026-09-06 — **2.5.3**: `help` is a single live catalog (`app_help`); `setup` alias listed; stale Java/timer help removed.
+2026-09-13 — **1.0.0**: gitlab-cli public baseline. Stripped from gitlab-nginx (no external Nginx / Certbot). Numbered main menu on a real terminal; `list-users` and `reset-password`.

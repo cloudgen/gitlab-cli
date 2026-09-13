@@ -1,175 +1,139 @@
 # =============================================================================
-# tests/test_domain.sh — gitlab-nginx domain surface (RQ-DOMAIN-GITLAB-NGINX)
+# tests/test_domain.sh — gitlab-cli domain surface (RQ-DOMAIN-GITLAB-CLI)
 # =============================================================================
-# Host-mutating run/nginx-conf need root; this suite proves dispatch, help,
-# about domain rows, empty-argv ≠ domain run, and read-only domains behavior.
+# Host-mutating GitLab rails/ctl need root + Omnibus. This suite proves
+# dispatch, help, about domain rows, empty-argv ≠ GitLab mutate, and
+# non-root fail-closed for list-users / reset-password / status / setup.
 # =============================================================================
 
 # shellcheck source=helpers.sh
 . "${TESTS_ROOT}/helpers.sh"
 
 run_test_domain() {
-    t_header "Domain surface (TP-GLN-*)"
+    t_header "Domain surface (TP-GITLAB-CLI-*)"
 
     require_cmd sh
 
-    # --- TP-GLN-01: help lists domain verbs + Type 0 + --no-cloudflare ---
+    # --- TP-GITLAB-CLI-01: help lists GitLab verbs; omits nginx ---
     _out=$(sh "${SCRIPT}" help 2>/dev/null)
     _ec=$?
-    assert_eq "TP-GLN-01 help exit 0" 0 "$_ec"
-    assert_contains "TP-GLN-01 help lists run" "$_out" "run"
-    assert_contains "TP-GLN-01 help lists setup as Alias: run" "$_out" "Alias: run"
-    assert_contains "TP-GLN-01 help lists domains" "$_out" "domains"
-    assert_contains "TP-GLN-01 help lists email" "$_out" "email"
-    assert_contains "TP-GLN-01 help lists nginx-conf" "$_out" "nginx-conf"
-    assert_contains "TP-GLN-01 help lists ssh-hostname" "$_out" "ssh-hostname"
-    assert_contains "TP-GLN-01 help lists remove-lpu" "$_out" "remove-lpu"
-    assert_contains "TP-GLN-01 help lists --no-cloudflare" "$_out" "--no-cloudflare"
-    assert_contains "TP-GLN-01 help still lists install" "$_out" "install"
-    assert_contains "TP-GLN-01 help still lists self-update" "$_out" "self-update"
-    assert_not_contains "TP-GLN-01 help must not list Java" "$_out" "Java"
-    assert_not_contains "TP-GLN-01 help must not list Maven" "$_out" "Maven"
-    assert_not_contains "TP-GLN-01 help must not list timer uninstall" "$_out" "Remove timer"
-    assert_not_contains "TP-GLN-01 help must not list pom.xml" "$_out" "pom.xml"
-    assert_contains "TP-GLN-01 help lists --reset as --force" "$_out" "--reset"
+    assert_eq "TP-GITLAB-CLI-01 help exit 0" 0 "$_ec"
+    assert_contains "TP-GITLAB-CLI-01 help lists list-users" "$_out" "list-users"
+    assert_contains "TP-GITLAB-CLI-01 help lists reset-password" "$_out" "reset-password"
+    assert_contains "TP-GITLAB-CLI-01 help lists status" "$_out" "status"
+    assert_contains "TP-GITLAB-CLI-01 help lists setup" "$_out" "setup"
+    assert_contains "TP-GITLAB-CLI-01 help lists remove-lpu" "$_out" "remove-lpu"
+    assert_contains "TP-GITLAB-CLI-01 help still lists install" "$_out" "install"
+    assert_contains "TP-GITLAB-CLI-01 help still lists self-update" "$_out" "self-update"
+    assert_not_contains "TP-GITLAB-CLI-01 help omits nginx-conf" "$_out" "nginx-conf"
+    assert_not_contains "TP-GITLAB-CLI-01 help omits --no-cloudflare" "$_out" "--no-cloudflare"
+    assert_not_contains "TP-GITLAB-CLI-01 help omits domains command row" "$_out" "Show saved domains"
+    assert_not_contains "TP-GITLAB-CLI-01 help omits Java" "$_out" "Java"
 
-    # --- TP-GLN-02: help --json mentions domain note surface ---
+    # --- TP-GITLAB-CLI-02: help --json notes GitLab verbs ---
     _out=$(sh "${SCRIPT}" --json help 2>/dev/null)
     _ec=$?
-    assert_eq "TP-GLN-02 help --json exit 0" 0 "$_ec"
-    assert_contains "TP-GLN-02 help --json success" "$_out" '"type":"success"'
-    assert_contains "TP-GLN-02 help --json notes domains" "$_out" "domains"
-    assert_contains "TP-GLN-02 help --json notes ssh-hostname" "$_out" "ssh-hostname"
-    assert_contains "TP-GLN-02 help --json notes setup" "$_out" "setup"
+    assert_eq "TP-GITLAB-CLI-02 help --json exit 0" 0 "$_ec"
+    assert_contains "TP-GITLAB-CLI-02 help --json success" "$_out" '"type":"success"'
+    assert_contains "TP-GITLAB-CLI-02 help --json notes list-users" "$_out" "list-users"
+    assert_contains "TP-GITLAB-CLI-02 help --json notes reset-password" "$_out" "reset-password"
 
-    # --- TP-GLN-03: about JSON domain fields ---
+    # --- TP-GITLAB-CLI-03: about JSON domain fields ---
     _out=$(sh "${SCRIPT}" --json about 2>/dev/null)
     _ec=$?
-    assert_eq "TP-GLN-03 about --json exit 0" 0 "$_ec"
-    assert_contains "TP-GLN-03 about type" "$_out" '"type":"about"'
-    assert_contains "TP-GLN-03 about domains_file" "$_out" '"domains_file"'
-    assert_contains "TP-GLN-03 about email_file" "$_out" '"email_file"'
-    assert_contains "TP-GLN-03 about domain_count" "$_out" '"domain_count"'
-    assert_contains "TP-GLN-03 about domain product" "$_out" '"domain":"gitlab-nginx"'
+    assert_eq "TP-GITLAB-CLI-03 about --json exit 0" 0 "$_ec"
+    assert_contains "TP-GITLAB-CLI-03 about type" "$_out" '"type":"about"'
+    assert_contains "TP-GITLAB-CLI-03 about gitlab_ctl" "$_out" '"gitlab_ctl"'
+    assert_contains "TP-GITLAB-CLI-03 about gitlab_rails" "$_out" '"gitlab_rails"'
+    assert_contains "TP-GITLAB-CLI-03 about gitlab_adm" "$_out" '"gitlab_adm"'
+    assert_contains "TP-GITLAB-CLI-03 about domain product" "$_out" '"domain":"gitlab-cli"'
+    assert_not_contains "TP-GITLAB-CLI-03 about omits domains_file" "$_out" '"domains_file"'
 
-    # --- TP-GLN-04: empty argv is Type O install-ensure, NOT domain run ---
-    # When already not forcing network: use isolated env + bad SCRIPT_URL → non-zero,
-    # and must not invoke interactive domain setup banners (Certbot / GitLab CE).
+    # --- TP-GITLAB-CLI-04: empty argv off-TTY is Type O, not GitLab mutate ---
     ci_isolated_env
     _errf="${CI_HOME}/empty-arg-err.txt"
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
-        SCRIPT_URL="http://127.0.0.1:1/gitlab-nginx-unreachable" \
+        SCRIPT_URL="http://127.0.0.1:1/gitlab-cli-unreachable" \
         sh "${SCRIPT}" </dev/null 2>"${_errf}"
     )
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     _all="${_out}${_err}"
     if [ "$_ec" -ne 0 ]; then
-        t_pass "TP-GLN-04 empty argv failed install exits non-zero (Type O)"
+        t_pass "TP-GITLAB-CLI-04 empty argv failed install exits non-zero (Type O)"
     else
-        t_fail "TP-GLN-04 empty argv expected non-zero without channel, got 0"
+        t_fail "TP-GITLAB-CLI-04 empty argv expected non-zero without channel, got 0"
     fi
-    assert_not_contains "TP-GLN-04 empty argv must not start GitLab install text" "$_all" "Installing GitLab"
-    assert_not_contains "TP-GLN-04 empty argv must not run certbot standalone" "$_all" "certbot certonly"
-    assert_file_missing "TP-GLN-04 empty argv left no binary" "${CI_USER_BIN}/gitlab-nginx"
+    assert_not_contains "TP-GITLAB-CLI-04 empty argv must not start GitLab install text" "$_all" "Installing GitLab"
+    assert_not_contains "TP-GITLAB-CLI-04 empty argv must not list users" "$_all" "gitlab-rails runner"
+    assert_file_missing "TP-GITLAB-CLI-04 empty argv left no binary" "${CI_USER_BIN}/gitlab-cli"
     ci_cleanup_env
 
-    # --- TP-GLN-05: domains command is routed (not unknown) ---
-    # May succeed (readable domains file) or warn; must not be "Unknown command".
+    # --- TP-GITLAB-CLI-05: list-users routed; non-root fail-closed ---
     _errf=$(mktemp)
-    _out=$(sh "${SCRIPT}" domains 2>"${_errf}")
-    _ec=$?
-    _err=$(cat "${_errf}" 2>/dev/null || true)
-    rm -f "${_errf}"
-    assert_not_contains "TP-GLN-05 domains not unknown command" "${_out}${_err}" "Unknown command"
-    # exit 0 typical when file readable; allow non-zero only for permission paths without crash
-    if [ "$_ec" -eq 0 ] || [ "$_ec" -eq 1 ]; then
-        t_pass "TP-GLN-05 domains exits 0 or 1 (routed)"
-    else
-        t_fail "TP-GLN-05 domains unexpected exit ${_ec}"
-    fi
-
-    # --- TP-GLN-06: domains --json produces JSON object when possible ---
-    _errf=$(mktemp)
-    _out=$(sh "${SCRIPT}" --json domains 2>"${_errf}")
+    _out=$(sh "${SCRIPT}" list-users 2>"${_errf}")
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     rm -f "${_errf}"
     _all="${_out}${_err}"
-    assert_not_contains "TP-GLN-06 domains --json not unknown" "$_all" "Unknown command"
-    case "$_all" in
-        *'"type":'*) t_pass "TP-GLN-06 domains --json emits type field" ;;
-        *)
-            # permission denied human path still acceptable if not unknown
-            case "$_all" in
-                *[Pp]ermission*|*denied*) t_pass "TP-GLN-06 domains --json permission-gated (honest)" ;;
-                *) t_fail "TP-GLN-06 domains --json no type/permission: $(_trunc "$_all")" ;;
-            esac
-            ;;
-    esac
+    assert_eq "TP-GITLAB-CLI-05 list-users non-root exit 1" 1 "$_ec"
+    assert_not_contains "TP-GITLAB-CLI-05 list-users not unknown" "$_all" "Unknown command"
+    assert_contains "TP-GITLAB-CLI-05 list-users root required" "$_all" "root"
+    assert_contains "TP-GITLAB-CLI-05 list-users Next:" "$_all" "Next:"
 
-    # --- TP-GLN-07: nginx-conf without root fails closed (not unknown) ---
+    # --- TP-GITLAB-CLI-06: reset-password routed; non-root fail-closed ---
     _errf=$(mktemp)
-    _out=$(sh "${SCRIPT}" nginx-conf 2>"${_errf}")
+    _out=$(sh "${SCRIPT}" reset-password 2>"${_errf}")
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     rm -f "${_errf}"
     _all="${_out}${_err}"
-    assert_eq "TP-GLN-07 nginx-conf non-root exit 1" 1 "$_ec"
-    assert_not_contains "TP-GLN-07 nginx-conf not unknown" "$_all" "Unknown command"
-    assert_contains "TP-GLN-07 nginx-conf root required" "$_all" "root"
+    assert_eq "TP-GITLAB-CLI-06 reset-password non-root exit 1" 1 "$_ec"
+    assert_not_contains "TP-GITLAB-CLI-06 reset-password not unknown" "$_all" "Unknown command"
+    assert_contains "TP-GITLAB-CLI-06 reset-password root required" "$_all" "root"
 
-    # --- TP-GLN-08: run without root fails closed ---
+    # --- TP-GITLAB-CLI-07: status without root fails closed ---
     _errf=$(mktemp)
-    # run may start non-interactive path; ensure not root path dies on check_root eventually
-    # Force non-TTY: </dev/null
-    _out=$(sh "${SCRIPT}" run </dev/null 2>"${_errf}")
+    _out=$(sh "${SCRIPT}" status 2>"${_errf}")
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     rm -f "${_errf}"
     _all="${_out}${_err}"
-    assert_not_contains "TP-GLN-08 run not unknown command" "$_all" "Unknown command"
-    # Non-root non-interactive typically dies on root check during setup steps
-    if [ "$_ec" -ne 0 ]; then
-        t_pass "TP-GLN-08 run non-root exits non-zero"
-    else
-        # If somehow succeeds without root, still fail closed expectation
-        t_fail "TP-GLN-08 run non-root expected non-zero exit"
-    fi
+    assert_eq "TP-GITLAB-CLI-07 status non-root exit 1" 1 "$_ec"
+    assert_not_contains "TP-GITLAB-CLI-07 status not unknown" "$_all" "Unknown command"
+    assert_contains "TP-GITLAB-CLI-07 status root required" "$_all" "root"
 
-    # --- TP-GLN-11: email command is routed (not unknown) ---
+    # --- TP-GITLAB-CLI-08: setup without root fails closed ---
     _errf=$(mktemp)
-    _out=$(sh "${SCRIPT}" email 2>"${_errf}")
-    _ec=$?
-    _err=$(cat "${_errf}" 2>/dev/null || true)
-    rm -f "${_errf}"
-    assert_not_contains "TP-GLN-11 email not unknown command" "${_out}${_err}" "Unknown command"
-    if [ "$_ec" -eq 0 ] || [ "$_ec" -eq 1 ]; then
-        t_pass "TP-GLN-11 email exits 0 or 1 (routed)"
-    else
-        t_fail "TP-GLN-11 email unexpected exit ${_ec}"
-    fi
-
-    # --- TP-GLN-12: ssh-hostname without root fails closed ---
-    _errf=$(mktemp)
-    _out=$(sh "${SCRIPT}" ssh-hostname 2>"${_errf}")
+    _out=$(sh "${SCRIPT}" setup </dev/null 2>"${_errf}")
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     rm -f "${_errf}"
     _all="${_out}${_err}"
-    assert_eq "TP-GLN-12 ssh-hostname non-root exit 1" 1 "$_ec"
-    assert_not_contains "TP-GLN-12 ssh-hostname not unknown" "$_all" "Unknown command"
-    assert_contains "TP-GLN-12 ssh-hostname root required" "$_all" "root"
+    assert_eq "TP-GITLAB-CLI-08 setup non-root exit 1" 1 "$_ec"
+    assert_not_contains "TP-GITLAB-CLI-08 setup not unknown" "$_all" "Unknown command"
+    assert_contains "TP-GITLAB-CLI-08 setup root required" "$_all" "root"
 
-    # --- TP-GLN-13: remove-lpu without root fails closed ---
+    # --- TP-GITLAB-CLI-09: remove-lpu without root fails closed ---
     _errf=$(mktemp)
     _out=$(sh "${SCRIPT}" remove-lpu 2>"${_errf}")
     _ec=$?
     _err=$(cat "${_errf}" 2>/dev/null || true)
     rm -f "${_errf}"
     _all="${_out}${_err}"
-    assert_eq "TP-GLN-13 remove-lpu non-root exit 1" 1 "$_ec"
-    assert_not_contains "TP-GLN-13 remove-lpu not unknown" "$_all" "Unknown command"
-    assert_contains "TP-GLN-13 remove-lpu root required" "$_all" "root"
+    assert_eq "TP-GITLAB-CLI-09 remove-lpu non-root exit 1" 1 "$_ec"
+    assert_not_contains "TP-GITLAB-CLI-09 remove-lpu not unknown" "$_all" "Unknown command"
+    assert_contains "TP-GITLAB-CLI-09 remove-lpu root required" "$_all" "root"
+
+    # --- TP-GITLAB-CLI-10: nginx verbs are unknown ---
+    _err=$(sh "${SCRIPT}" nginx-conf 2>&1 >/dev/null)
+    _ec=$?
+    assert_eq "TP-GITLAB-CLI-10 nginx-conf exit 1" 1 "$_ec"
+    assert_contains "TP-GITLAB-CLI-10 nginx-conf unknown" "$_err" "Unknown command"
+
+    _err=$(sh "${SCRIPT}" domains 2>&1 >/dev/null)
+    _ec=$?
+    assert_eq "TP-GITLAB-CLI-10 domains exit 1" 1 "$_ec"
+    assert_contains "TP-GITLAB-CLI-10 domains unknown" "$_err" "Unknown command"
 }

@@ -1,3 +1,5 @@
+**Note (2026-09-13):** This product is now **gitlab-cli 1.0.0** — a GitLab **operator** CLI stripped from gitlab-nginx (external Nginx / Certbot removed). The independent review below is the **origin** gitlab-nginx v2.2.0 inspection, kept as historical DNA, not a claim that gitlab-cli still ships that Nginx installer.
+
 from [grok](https://grok.com/c/ec132e58-e929-4ad2-a8a7-0c8a31d1c427?rid=3f7eb72d-2823-4cfc-8f23-4aeb905f43b8)
 
 **Independent Security Review & Code Inspection: gitlab-nginx v2.2.0**  

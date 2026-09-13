@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-class-software-dev.md  
-**Status**: Active (Version 1.0.0 – gitlab-nginx class law + residual stack)  
+**Status**: Active (Version 1.0.0 – gitlab-cli class law + residual stack)  
 **Area**: class  
 **Key**: `requirement-class-software-dev`  
 **Philosophy**: CIAO **v2.10.2** / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered / Over-protect)
@@ -12,12 +12,12 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 ### 1.1 Human-facing
 
-**In one sentence:** This folder’s **project nature** is software-development: the program people install is `./gitlab-nginx`, written in POSIX `/bin/sh`.
+**In one sentence:** This folder’s **project nature** is software-development: the program people install is `./gitlab-cli`, written in POSIX `/bin/sh`.
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | You use a finished CLI, not an empty workshop kit | `gitlab-nginx help` |
-| The other role | Peer shell/domain files own commands, checksum, GitLab setup | `requirement-domain-gitlab-nginx` |
+| You / this login | You use a finished CLI, not an empty workshop kit | `gitlab-cli help` |
+| The other role | Peer shell/domain files own commands, checksum, GitLab setup | `requirement-domain-gitlab-cli` |
 | Not this file | Server-maintenance allowlists; genesis empty law | no `requirement-class-server-maintenance` |
 
 | Includes | Excludes |
@@ -27,12 +27,12 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `./gitlab-nginx` | program file people install | live product |
+| `./gitlab-cli` | program file people install | live product |
 | `docs/requirements/index.md` | registry | which files are law |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Confirm nature | This is a shippable program, not a blank starter kit. | `gitlab-nginx version` |
+| Confirm nature | This is a shippable program, not a blank starter kit. | `gitlab-cli version` |
 
 ---
 
@@ -89,9 +89,9 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 ### 2.7 Implementation Notes (this project)
 
-| Field | Value (gitlab-nginx) |
+| Field | Value (gitlab-cli) |
 |-------|---------------------|
-| **Project display name** | `gitlab-nginx` (product root `README.md` H1 SSOT) |
+| **Project display name** | `gitlab-cli` (product root `README.md` H1 SSOT) |
 | **Project class** | software-development |
 | **Class requirement basename** | `requirement-class-software-dev.md` |
 | **Primary language(s)** | `posix-sh` (`/bin/sh`) |
@@ -106,9 +106,9 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | **Linter/formatter** | none as project law (shellcheck optional for maintainers, not required gate) |
 | **Primary runtime / OS family** | POSIX Linux (and compatible UNIX where `/bin/sh` + coreutils/`sha256sum`/`mktemp` exist) |
 | **Architectures supported** | any arch with a POSIX sh and the external tools the script invokes (no arch-specific binary) |
-| **Git surface** | used for product publish (`github.com/Wilgat/gitlab-nginx`) |
-| **Ship unit / install** | yes — repo root `./gitlab-nginx` + companion `gitlab-nginx.sha256`; Type 0 online install (peer shell REQs) |
-| **Product version SSOT** | `VERSION="…"` hard-assign in `./gitlab-nginx` (currently `2.5.3`) |
+| **Git surface** | used for product publish (`github.com/cloudgen/gitlab-cli`) |
+| **Ship unit / install** | yes — repo root `./gitlab-cli` + companion `gitlab-cli.sha256`; Type 0 online install (peer shell REQs) |
+| **Product version SSOT** | `VERSION="…"` hard-assign in `./gitlab-cli` (currently `2.5.3`) |
 
 **Residual ownership table:**
 
@@ -128,7 +128,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | Modular prefixes / single-file layout | `requirement-shell-modular-function-design` | Do not duplicate |
 | POSIX `/bin/sh` coding style (specialize-in) | `requirement-shell-script-coding` | Without that file, portable lessons arrive raw |
 | In-tool sudo allow table | `requirement-shell-sudo-command` | Studied argv; do not duplicate |
-| Domain features / help / about extras | `requirement-domain-gitlab-nginx` | GitLab/Nginx domain SSOT; do not duplicate |
+| Domain features / help / about extras | `requirement-domain-gitlab-cli` | GitLab/Nginx domain SSOT; do not duplicate |
 | Actor / role / subject / approver | **this file** (considered) | **No dest approver** — this product is not an approval dest |
 | Dest fence conditions | **this file** (considered) | **No dest fence conditions** — no dest approve/reject inbound on this product |
 
@@ -214,10 +214,10 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 
 | Date | Status | Note |
 |------|--------|------|
-| 2026-07-19 | Active | Specialized class law for gitlab-nginx (review fix F1) |
+| 2026-07-19 | Active | Specialized class law for gitlab-cli (review fix F1) |
 
 ---
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 4, 5, 20, 21 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

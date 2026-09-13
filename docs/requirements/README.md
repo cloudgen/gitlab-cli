@@ -2,7 +2,7 @@
 
 Authoritative product and engineering requirements for this project live here.
 
-**Current state (2026-09-06 — gitlab-nginx specialized):** **13** Active `requirement-*.md` — class `requirement-class-software-dev`, **eleven** `requirement-shell-*.md` (automatic-checksum, CLI interface, cli-storage, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management, **script-coding**, **sudo-command**), and domain SSOT `requirement-domain-gitlab-nginx`. Registry: `index.md` (must stay in sync). Self-install/self-maintenance + GitLab/Nginx domain. Class residual: dest approver **none**; dest fence conditions **none**; ship `VERSION` **2.5.3**. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change. Do **not** empty this registry to match genesis.
+**Current state (2026-09-13 — gitlab-cli specialized):** **14** Active `requirement-*.md` — class `requirement-class-software-dev`, **twelve** `requirement-shell-*.md` (automatic-checksum, CLI interface, **cli-default-interaction**, cli-storage, CLI zero-arguments, idempotency, interactive vs noninteractive, modular design, output, self-management, **script-coding**, **sudo-command**), and domain SSOT `requirement-domain-gitlab-cli`. Registry: `index.md` (must stay in sync). Self-install/self-maintenance + GitLab operator domain (Nginx stripped). Class residual: dest approver **none**; dest fence conditions **none**; ship `VERSION` **1.0.0**. Do **not** invent additional requirement paths without a real ownership gap — verify on disk and register new files in `index.md` in the same change. Do **not** empty this registry to match genesis.
 
 ## Purpose
 

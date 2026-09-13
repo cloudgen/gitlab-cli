@@ -21,7 +21,7 @@ run_test_install_lifecycle() {
 
     # Ensure trap cleanup even if a later assert fails hard
     # (caller of run.sh also cleans; this is belt-and-suspenders for this suite)
-    _gln_bin="${CI_USER_BIN}/gitlab-nginx"
+    _gln_bin="${CI_USER_BIN}/gitlab-cli"
 
     _errf="${CI_HOME}/lc-err.txt"
 
@@ -61,8 +61,8 @@ run_test_install_lifecycle() {
     # Detect prefers executable GLOBAL_BIN path even for non-root (inst_get_version).
     _global_bin="${CI_HOME}/global-bin"
     mkdir -p "${_global_bin}"
-    cp "${SCRIPT}" "${_global_bin}/gitlab-nginx"
-    chmod +x "${_global_bin}/gitlab-nginx"
+    cp "${SCRIPT}" "${_global_bin}/gitlab-cli"
+    chmod +x "${_global_bin}/gitlab-cli"
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${_global_bin}" \
         SCRIPT_URL="${CI_SCRIPT_URL}" \
@@ -73,7 +73,7 @@ run_test_install_lifecycle() {
     assert_contains "zero-arg when installed (global) says already installed" "$_out" "already installed"
     assert_not_contains "zero-arg when installed (global) must not dump help" "$_out" "Global Options"
     # Leave local install in place for remaining lifecycle tests; drop isolated global stub
-    rm -f "${_global_bin}/gitlab-nginx"
+    rm -f "${_global_bin}/gitlab-cli"
 
     # --- about shows installed ---
     _out=$(
@@ -186,10 +186,10 @@ run_test_install_lifecycle() {
 
     # --- downgrade refuse without --force; allow with --force ---
     # Point channel at an older VERSION while local remains PRODUCT_VERSION.
-    _older="${CI_CHANNEL_DIR}/gitlab-nginx"
+    _older="${CI_CHANNEL_DIR}/gitlab-cli"
     # shellcheck disable=SC2016
     sed "s/^VERSION=\"${PRODUCT_VERSION}\"/VERSION=\"0.9.0\"/" "${SCRIPT}" > "${_older}"
-    printf '%s\n' "$(sha256sum "${_older}" | awk '{print $1}')" > "${CI_CHANNEL_DIR}/gitlab-nginx.sha256"
+    printf '%s\n' "$(sha256sum "${_older}" | awk '{print $1}')" > "${CI_CHANNEL_DIR}/gitlab-cli.sha256"
     # ensure local is still current product version (from prior good CHECKSUM install)
     assert_file_exists "local binary present for downgrade tests" "${_gln_bin}"
 

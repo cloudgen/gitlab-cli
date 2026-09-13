@@ -4,7 +4,7 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth** for **idempotency (re-run safety)** of state-changing operations in the **POSIX shell CLI** for gitlab-nginx.
+This requirement is the **project Single Source of Truth** for **idempotency (re-run safety)** of state-changing operations in the **POSIX shell CLI** for gitlab-cli.
 
 It defines re-run safety for ensure-style shell lifecycle commands (install, PATH integration, self-update, self-uninstall, and related helpers). Read-only commands remain outside the “ensure-X” contract except where they must stay safe under repeat invocation.
 
@@ -19,8 +19,8 @@ It defines re-run safety for ensure-style shell lifecycle commands (install, PAT
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | Re-run `gitlab-nginx` / `install` after it already worked | already-installed message |
-| The other role | `--force` is a deliberate replace, not the default | `gitlab-nginx install --force` |
+| You / this login | Re-run `gitlab-cli` / `install` after it already worked | already-installed message |
+| The other role | `--force` is a deliberate replace, not the default | `gitlab-cli install --force` |
 | Not this file | GitLab `gitlab-ctl reconfigure` idempotency | Omnibus |
 
 | Includes | Excludes |
@@ -30,8 +30,8 @@ It defines re-run safety for ensure-style shell lifecycle commands (install, PAT
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `gitlab-nginx` (no args, already installed) | command | success no-op |
-| `gitlab-nginx install` | command | same ensure |
+| `gitlab-cli` (no args, already installed) | command | success no-op |
+| `gitlab-cli install` | command | same ensure |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
@@ -87,10 +87,10 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 
 ### 2.5 Implementation Notes (this project)
 
-| Item | Value for gitlab-nginx |
+| Item | Value for gitlab-cli |
 |------|------------------------|
-| **Product / binary** | `gitlab-nginx` (`APP_NAME`) |
-| **Implementation file** | Repo root `./gitlab-nginx` |
+| **Product / binary** | `gitlab-cli` (`APP_NAME`) |
+| **Implementation file** | Repo root `./gitlab-cli` |
 | **Install detect SSOT** | `inst_is_installed` / `inst_get_version` |
 | **Install ensure SSOT** | `inst_perform_install` (+ download/atomic helpers) |
 | **Force reinstall var** | `FORCE_REINSTALL` (default `0`); CLI `--force` must set this per `requirement-shell-cli-interface.md` |
@@ -169,7 +169,7 @@ Force **MUST NOT** be used as a silent way to skip integrity verification.
 
 ## 5. Definition of done (shell idempotency)
 
-A state-changing shell change for gitlab-nginx is **not done** if any of the following fail:
+A state-changing shell change for gitlab-cli is **not done** if any of the following fail:
 
 1. Second `install` with healthy install and force off exits success without reinstall.  
 2. Second `self-update` when local equals remote and force off exits success without reinstall.  
@@ -191,7 +191,7 @@ A state-changing shell change for gitlab-nginx is **not done** if any of the fol
 | `docs/requirements/requirement-shell-self-management.md` | Lifecycle commands; integrity + downgrade policy |
 | `docs/requirements/requirement-shell-output-requirements.md` | Messages on no-op / already-done paths |
 | `docs/requirements/index.md` | Registry SSOT |
-| `./gitlab-nginx` | Implementation under test |
+| `./gitlab-cli` | Implementation under test |
 
 ---
 
@@ -211,5 +211,5 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 **Map:** `reviews/test-plan.md`.
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; related `requirement-shell-cli-interface.md`; CIAO Principles 1, 2, 3, 11, 12, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

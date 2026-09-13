@@ -5,19 +5,19 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth for POSIX `/bin/sh` coding style** of `./gitlab-nginx`. **Without this file, portable learned lessons arrive raw** — agents would treat coding skills as product law. This file is the specialize-in home.
+This requirement is the **project Single Source of Truth for POSIX `/bin/sh` coding style** of `./gitlab-cli`. **Without this file, portable learned lessons arrive raw** — agents would treat coding skills as product law. This file is the specialize-in home.
 
 **Scope:** POSIX subset, function headers, safe defaults, `set -u` without `set -e`, no-capture of `read` helpers, check-before-sudo (bodies live on `requirement-shell-sudo-command`), product-source cites live requirements only.  
 **Out of scope (own-or-point):** Full `out_*` catalog (`requirement-shell-output-requirements`); prefix table (`requirement-shell-modular-function-design`); TTY mode matrix (`requirement-shell-interactive-vs-noninteractive`); cache/persistence roots (`requirement-shell-cli-storage`).
 
 ### 1.1 Human-facing
 
-**In one sentence:** Maintainers write `./gitlab-nginx` in portable `/bin/sh` so a person can install and run it on a thin Linux box without bash-only tricks.
+**In one sentence:** Maintainers write `./gitlab-cli` in portable `/bin/sh` so a person can install and run it on a thin Linux box without bash-only tricks.
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | You edit the one program file people install | `./gitlab-nginx` |
-| The other role | Reviewers check headers, defaults, and “no `$()` around prompts” | `gitlab-nginx help` still works after a surgical edit |
+| You / this login | You edit the one program file people install | `./gitlab-cli` |
+| The other role | Reviewers check headers, defaults, and “no `$()` around prompts” | `gitlab-cli help` still works after a surgical edit |
 | Not this file | Command names, checksum algorithm, GitLab setup steps | peer requirements |
 
 | Includes | Excludes |
@@ -28,12 +28,12 @@ This requirement is the **project Single Source of Truth for POSIX `/bin/sh` cod
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `./gitlab-nginx` | program file people install | live coding |
-| `gitlab-nginx help` | command | listed verbs still match dispatch |
+| `./gitlab-cli` | program file people install | live coding |
+| `gitlab-cli help` | command | listed verbs still match dispatch |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Change a helper | Keep the defensive header, set defaults first, talk to people through `out_*`. Do not wrap `prompt_ask` in `$()`. | edit `./gitlab-nginx` then `sh -n ./gitlab-nginx` |
+| Change a helper | Keep the defensive header, set defaults first, talk to people through `out_*`. Do not wrap `prompt_ask` in `$()`. | edit `./gitlab-cli` then `sh -n ./gitlab-cli` |
 
 ---
 
@@ -69,19 +69,19 @@ In-tool `sudo` **MUST** go through the wrap and allow table on `requirement-shel
 
 ### 2.6 Product-source comments
 
-Comments in `./gitlab-nginx` that claim law **MUST** cite live `requirement-*.md` files registered in `docs/requirements/index.md` — never templates or skills as authority.
+Comments in `./gitlab-cli` that claim law **MUST** cite live `requirement-*.md` files registered in `docs/requirements/index.md` — never templates or skills as authority.
 
 ### 2.7 Implementation Notes (this project)
 
 | Item | Value |
 |------|--------|
-| Ship unit | `./gitlab-nginx` |
+| Ship unit | `./gitlab-cli` |
 | Interpreter | `/bin/sh` |
 | Nounset | `set -u` with Config defaults at file top and function-local `: "${…:=}"` |
 | Global `set -e` | not used |
 | Prefixes | `out_` `inst_` `app_` `util_` `ver_` `path_` `prompt_` plus domain helpers already in the file |
 | Prompt capture | `prompt_ask` is a data-return helper (class B stdout) **and** prints prompt text via `out_*`; callers **MUST NOT** `_x=$(prompt_ask …)` for the **choice** of a `read` helper |
-| Sudo sites | `sudo systemctl stop nginx`; `sudo -u nginx-adm nginx -t` — see `requirement-shell-sudo-command` |
+| Sudo sites | none in-tool after the nginx strip — see `requirement-shell-sudo-command` |
 
 ## Under command line for normal user only
 
@@ -130,8 +130,8 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 | `docs/requirements/requirement-shell-output-requirements.md` | `out_*` |
 | `docs/requirements/requirement-shell-interactive-vs-noninteractive.md` | TTY / prompts |
 | `docs/requirements/requirement-shell-sudo-command.md` | In-tool sudo allow table |
-| `./gitlab-nginx` | Implementation under test |
+| `./gitlab-cli` | Implementation under test |
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

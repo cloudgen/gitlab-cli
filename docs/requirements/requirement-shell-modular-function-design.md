@@ -4,7 +4,7 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth** for **modular function organization** of the gitlab-nginx POSIX shell CLI.
+This requirement is the **project Single Source of Truth** for **modular function organization** of the gitlab-cli POSIX shell CLI.
 
 It defines modular function organization for a **monolithic yet modular** single-file shell tool that remains `curl | sh` compatible.
 
@@ -19,7 +19,7 @@ It defines modular function organization for a **monolithic yet modular** single
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | You still `curl \| sh` one script | `./gitlab-nginx` |
+| You / this login | You still `curl \| sh` one script | `./gitlab-cli` |
 | The other role | Coding-style REQ owns POSIX/`set -u` lessons | `requirement-shell-script-coding` |
 | Not this file | Splitting into many shipped files for the one-liner | not claimed |
 
@@ -30,12 +30,12 @@ It defines modular function organization for a **monolithic yet modular** single
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `./gitlab-nginx` | program file | live prefixes |
-| `gitlab-nginx help` | command | `app_help` |
+| `./gitlab-cli` | program file | live prefixes |
+| `gitlab-cli help` | command | `app_help` |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Add a helper | Give it a prefix, a header, and defaults. Do not invent a second ship file. | edit `./gitlab-nginx` |
+| Add a helper | Give it a prefix, a header, and defaults. Do not invent a second ship file. | edit `./gitlab-cli` |
 
 ---
 
@@ -52,7 +52,7 @@ CIAO-Lite shell CLIs distributed as one-liners **MUST** use:
 | **Documented units** | Every public helper carries a defensive header and safe defaults |
 | **Requirements extract policy** | Durable rules live in `requirement-*.md`; code comments encode intent and Protection Zones |
 
-Optional multi-file layout under `src/` for future authoring **MAY** exist only if a build or pack step still produces **one** installable artifact and this requirement is updated. Until then, `./gitlab-nginx` remains the single shipped script.
+Optional multi-file layout under `src/` for future authoring **MAY** exist only if a build or pack step still produces **one** installable artifact and this requirement is updated. Until then, `./gitlab-cli` remains the single shipped script.
 
 ### 2.2 Official function prefix table (mandatory)
 
@@ -90,7 +90,7 @@ Every non-trivial function **MUST** include a defensive header of this shape (tr
 
 #### 2.3.1 Product-source documentation authority
 
-Optional `ALIGNMENT` / `See` / “fully synchronized with” lines in **product source** (`./gitlab-nginx`) **MUST** cite only **live** `docs/requirements/requirement-*.md` paths that exist on disk and appear in `docs/requirements/index.md`.
+Optional `ALIGNMENT` / `See` / “fully synchronized with” lines in **product source** (`./gitlab-cli`) **MUST** cite only **live** `docs/requirements/requirement-*.md` paths that exist on disk and appear in `docs/requirements/index.md`.
 
 | Allowed in product source comments | Forbidden in product source comments |
 |------------------------------------|--------------------------------------|
@@ -164,17 +164,17 @@ function_name() {
 
 ### 2.6 Implementation Notes (this project)
 
-| Item | Value for gitlab-nginx |
+| Item | Value for gitlab-cli |
 |------|------------------------|
-| **Product / binary** | `gitlab-nginx` (`APP_NAME`) |
-| **Single shipped script** | Repo root `./gitlab-nginx` (~2k lines, `#!/bin/sh`) |
+| **Product / binary** | `gitlab-cli` (`APP_NAME`) |
+| **Single shipped script** | Repo root `./gitlab-cli` (~2k lines, `#!/bin/sh`) |
 | **`src/` directory** | Present but empty — **not** a multi-file runtime layout yet |
-| **Domain prefix `gitlab-nginx_*`** | **Not used** today (Type 0 lifecycle only; no product domain ops) |
-| **Bootstrap** | Direct execution when `${0##*/}` is `gitlab-nginx` or `gitlab-nginx.sh` → `app_main "$@"` |
+| **Domain prefix `gitlab-cli_*`** | **Not used** today (Type 0 lifecycle only; no product domain ops) |
+| **Bootstrap** | Direct execution when `${0##*/}` is `gitlab-cli` or `gitlab-cli.sh` → `app_main "$@"` |
 
 #### Live prefix inventory (authoritative categories)
 
-| Prefix | Live examples in `./gitlab-nginx` |
+| Prefix | Live examples in `./gitlab-cli` |
 |--------|----------------------------------|
 | `out_` | `out_text`, `out_success`, `out_info`, `out_warn`, `out_error`, `out_die`, `out_plain`, `out_msg_n`, `out_empty_line`, `out_double_line`, `out_json`, `out_json_error` |
 | `inst_` | `inst_perform_install`, `inst_perform_install_prepare_target`, `inst_perform_install_download_with_checksum`, `inst_perform_install_download_without_checksum`, `inst_perform_install_atomic_install`, `inst_maybe_install`, `inst_self_update`, `inst_self_uninstall` (+ determine_bin / confirm_and_remove / cleanup_path), `inst_is_installed`, `inst_get_version` |
@@ -195,7 +195,7 @@ function_name() {
 
 #### New function checklist (this project)
 
-When adding a function to `./gitlab-nginx`:
+When adding a function to `./gitlab-cli`:
 
 1. Choose the correct prefix from §2.2 / this inventory.  
 2. Add the defensive header (full for non-trivial logic).  
@@ -250,7 +250,7 @@ When adding a function to `./gitlab-nginx`:
 
 ## 5. Definition of done (shell modular function design)
 
-A modular-structure change for gitlab-nginx is **not done** if any of the following fail:
+A modular-structure change for gitlab-cli is **not done** if any of the following fail:
 
 1. Every new function uses an approved prefix from this requirement.  
 2. Critical helpers retain defensive headers and Protection intent.  
@@ -273,7 +273,7 @@ A modular-structure change for gitlab-nginx is **not done** if any of the follow
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety inside ensure helpers |
 | `docs/requirements/requirement-shell-output-requirements.md` | `out_*` ownership |
 | `docs/requirements/index.md` | Registry SSOT |
-| `./gitlab-nginx` | Implementation under modular design rules |
+| `./gitlab-cli` | Implementation under modular design rules |
 
 ---
 
@@ -292,5 +292,5 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 **Map:** `reviews/test-plan.md`.
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 6, 7, 8, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

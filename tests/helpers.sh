@@ -1,5 +1,5 @@
 # =============================================================================
-# tests/helpers.sh — shared assertions for gitlab-nginx CI tests
+# tests/helpers.sh — shared assertions for gitlab-cli CI tests
 # =============================================================================
 # Source from test scripts (POSIX /bin/sh). Does not modify product code.
 # =============================================================================
@@ -7,7 +7,7 @@
 # shellcheck disable=SC2034
 : "${TESTS_ROOT:=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}"
 : "${REPO_ROOT:=$(CDPATH= cd -- "${TESTS_ROOT}/.." && pwd)}"
-: "${SCRIPT:=${REPO_ROOT}/gitlab-nginx}"
+: "${SCRIPT:=${REPO_ROOT}/gitlab-cli}"
 : "${PASS:=0}"
 : "${FAIL:=0}"
 : "${SKIP:=0}"
@@ -83,14 +83,14 @@ _trunc() {
 }
 
 # --- isolation helpers ---
-# Start a local HTTP channel serving REPO_ROOT/gitlab-nginx (+ .sha256).
+# Start a local HTTP channel serving REPO_ROOT/gitlab-cli (+ .sha256).
 # Sets: CI_HTTP_PID, CI_SCRIPT_URL, CI_CHANNEL_DIR, CI_PORT
 # Caller must call ci_stop_channel on cleanup.
 ci_start_channel() {
     CI_CHANNEL_DIR=$(mktemp -d "${TMPDIR:-/tmp}/gln-channel.XXXXXX")
-    cp "${SCRIPT}" "${CI_CHANNEL_DIR}/gitlab-nginx"
+    cp "${SCRIPT}" "${CI_CHANNEL_DIR}/gitlab-cli"
     # Always derive companion from the bytes under test (not a possibly stale repo sidecar)
-    sha256sum "${CI_CHANNEL_DIR}/gitlab-nginx" | awk '{print $1}' > "${CI_CHANNEL_DIR}/gitlab-nginx.sha256"
+    sha256sum "${CI_CHANNEL_DIR}/gitlab-cli" | awk '{print $1}' > "${CI_CHANNEL_DIR}/gitlab-cli.sha256"
 
     CI_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()')
     (
@@ -98,7 +98,7 @@ ci_start_channel() {
         exec python3 -m http.server "${CI_PORT}" --bind 127.0.0.1
     ) >/dev/null 2>&1 &
     CI_HTTP_PID=$!
-    CI_SCRIPT_URL="http://127.0.0.1:${CI_PORT}/gitlab-nginx"
+    CI_SCRIPT_URL="http://127.0.0.1:${CI_PORT}/gitlab-cli"
 
     # Wait until the server answers
     _i=0

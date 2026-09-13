@@ -4,7 +4,7 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth** for **CLI self-management** of the gitlab-nginx POSIX shell tool: inspecting, upgrading, and removing its own installed binary (and related install artifacts) safely—especially for tools installed via one-command online install (`curl | sh`)—without requiring a separate package-manager workflow for routine updates.
+This requirement is the **project Single Source of Truth** for **CLI self-management** of the gitlab-cli POSIX shell tool: inspecting, upgrading, and removing its own installed binary (and related install artifacts) safely—especially for tools installed via one-command online install (`curl | sh`)—without requiring a separate package-manager workflow for routine updates.
 
 It defines lifecycle capabilities and safety rules for this shell project’s self-management commands.
 
@@ -19,7 +19,7 @@ It defines lifecycle capabilities and safety rules for this shell project’s se
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | `version-check` / `self-update` / `self-uninstall` / `about` as yourself | `gitlab-nginx self-update` |
+| You / this login | `version-check` / `self-update` / `self-uninstall` / `about` as yourself | `gitlab-cli self-update` |
 | The other role | Channel host serving `SCRIPT_URL` | GitHub raw URL |
 | Not this file | `remove-lpu` (dedicated accounts) or Omnibus GitLab uninstall | domain requirement |
 
@@ -30,12 +30,12 @@ It defines lifecycle capabilities and safety rules for this shell project’s se
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `gitlab-nginx about` | command | install + folder diagnostics |
-| `gitlab-nginx self-uninstall` | command | remove CLI binary |
+| `gitlab-cli about` | command | install + folder diagnostics |
+| `gitlab-cli self-uninstall` | command | remove CLI binary |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Update the CLI | Fetches the channel, verifies digest, replaces the installed binary. GitLab on the host stays. | `gitlab-nginx self-update` |
+| Update the CLI | Fetches the channel, verifies digest, replaces the installed binary. GitLab on the host stays. | `gitlab-cli self-update` |
 
 ---
 
@@ -119,17 +119,17 @@ Root may write global install path; non-root uses user path. Do not assume root 
 
 ### 2.8 Implementation Notes (this project)
 
-| Item | Value for gitlab-nginx |
+| Item | Value for gitlab-cli |
 |------|------------------------|
-| **Product / binary** | `gitlab-nginx` (`APP_NAME`) |
-| **Implementation file** | Repo root `./gitlab-nginx` |
+| **Product / binary** | `gitlab-cli` (`APP_NAME`) |
+| **Implementation file** | Repo root `./gitlab-cli` |
 | **Dispatcher** | `app_main` routes `version-check` → `ver_check`; `self-update` → `inst_self_update`; `self-uninstall` → `inst_self_uninstall`; `about` → `app_about` |
 | **Install orchestrator SSOT** | `inst_perform_install` (+ prepare / download with or without checksum / atomic install) |
 | **Version compare** | `ver_gt` (pure POSIX); local version via `inst_get_version` |
 | **Install presence** | `inst_is_installed` |
 | **Paths** | `GLOBAL_BIN` default `/usr/local/bin`; `USER_BIN` default `${HOME}/.local/bin` |
-| **Repository identity** | `REPO_USER` default `Wilgat`; `REPO_NAME` default `gitlab-nginx` |
-| **Release channel** | `SCRIPT_URL` Config default composed as `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}` (this project: `https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx` — product channel SSOT; override `SCRIPT_URL` or `REPO_*` via env if needed) |
+| **Repository identity** | `REPO_USER` default `cloudgen`; `REPO_NAME` default `gitlab-cli` |
+| **Release channel** | `SCRIPT_URL` Config default composed as `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}` (this project: `https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli` — product channel SSOT; override `SCRIPT_URL` or `REPO_*` via env if needed) |
 | **Strict digest pin** | Runtime `CHECKSUM` when set in process env → `inst_perform_install_download_with_checksum` (secondary install-path only; **not** shown in `help`/`about`; see automatic-checksum requirement) |
 | **Companion digest** | Default `${SCRIPT_URL}.sha256` via `inst_perform_install_download_without_checksum` — law + transparency: `requirement-shell-automatic-checksum.md` |
 | **Force reinstall** | `FORCE_REINSTALL`; CLI `--force` required by CLI interface requirement |
@@ -156,7 +156,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 |------|--------|
 | Downgrade gate via `ver_gt` (refuse unless `--force`) | **Implemented** in `inst_self_update` (2026-07-12) |
 | CLI `--force` → `FORCE` / `FORCE_REINSTALL` | **Implemented** in `app_main` |
-| `SCRIPT_URL` default channel URL | **This project:** non-empty product default composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (`https://raw.githubusercontent.com/Wilgat/gitlab-nginx/main/gitlab-nginx`); product README must show simple literal one-liner(s) from that SSOT; env may still override |
+| `SCRIPT_URL` default channel URL | **This project:** non-empty product default composed from `REPO_USER` / `REPO_NAME` / `APP_NAME` (`https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli`); product README must show simple literal one-liner(s) from that SSOT; env may still override |
 
 ### 2.9 Why This Requirement Exists (Direct CIAO Alignment)
 
@@ -203,7 +203,7 @@ Root may write global install path; non-root uses user path. Do not assume root 
 
 ## 5. Definition of done (shell self-management)
 
-Work claiming self-management support for gitlab-nginx is **not done** if any of the following fail:
+Work claiming self-management support for gitlab-cli is **not done** if any of the following fail:
 
 1. User-facing lifecycle commands exist and are routed (`version-check`, `self-update`, `self-uninstall`, `about`).  
 2. Update path verifies integrity (pinned and/or companion digest policy) and uses atomic replace via install SSOT.  
@@ -226,7 +226,7 @@ Work claiming self-management support for gitlab-nginx is **not done** if any of
 | `docs/requirements/requirement-shell-output-requirements.md` | Lifecycle messaging / quiet / JSON |
 | `docs/requirements/requirement-shell-modular-function-design.md` | `inst_*` / `out_*` ownership |
 | `docs/requirements/index.md` | Registry SSOT |
-| `./gitlab-nginx` | Implementation under test |
+| `./gitlab-cli` | Implementation under test |
 
 ---
 
@@ -246,5 +246,5 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 **Map:** `reviews/test-plan.md`.
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 10, 11, 14, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

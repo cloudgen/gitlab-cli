@@ -4,7 +4,7 @@
 
 ## 1. Purpose
 
-This requirement is the **project Single Source of Truth** for how the gitlab-nginx **POSIX shell CLI** behaves in **interactive** (human + TTY) versus **non-interactive** (automation, `curl | sh`, CI/CD, pipes, `--json` / often `--quiet`) environments.
+This requirement is the **project Single Source of Truth** for how the gitlab-cli **POSIX shell CLI** behaves in **interactive** (human + TTY) versus **non-interactive** (automation, `curl | sh`, CI/CD, pipes, `--json` / often `--quiet`) environments.
 
 It defines interactive vs non-interactive behavior for this shell project (global flags + `prompt_*` + TTY detection—not a Node Config singleton).
 
@@ -17,7 +17,7 @@ It defines interactive vs non-interactive behavior for this shell project (globa
 
 | Box | Meaning | Example |
 |-----|---------|---------|
-| You / this login | TTY + no `--json` → confirms allowed | `gitlab-nginx self-uninstall` |
+| You / this login | TTY + no `--json` → confirms allowed | `gitlab-cli self-uninstall` |
 | The other role | CI / `curl \| sh` / `--json` → documented defaults | non-interactive install |
 | Not this file | Dest approval yes/no (this product has no dest) | class residual none |
 
@@ -28,12 +28,12 @@ It defines interactive vs non-interactive behavior for this shell project (globa
 
 | Surface | What you open | What for |
 |---------|---------------|----------|
-| `gitlab-nginx --json self-uninstall` | command | fail closed or structured confirm_required |
-| `sudo gitlab-nginx run` | command | TTY required for full setup |
+| `gitlab-cli --json self-uninstall` | command | fail closed or structured confirm_required |
+| `sudo gitlab-cli run` | command | TTY required for full setup |
 
 | You do… | What it means | What you type |
 |---------|---------------|---------------|
-| Automate | Non-interactive `run` does **not** claim full GitLab setup. Uninstall without TTY needs `--force` or JSON `confirm_required`. | `gitlab-nginx --json self-uninstall` |
+| Automate | Non-interactive `run` does **not** claim full GitLab setup. Uninstall without TTY needs `--force` or JSON `confirm_required`. | `gitlab-cli --json self-uninstall` |
 
 ---
 
@@ -130,10 +130,10 @@ interactive   non-interactive
 
 ### 2.5 Implementation Notes (this project)
 
-| Item | Value for gitlab-nginx |
+| Item | Value for gitlab-cli |
 |------|------------------------|
-| **Product / binary** | `gitlab-nginx` |
-| **Implementation** | Repo root `./gitlab-nginx` |
+| **Product / binary** | `gitlab-cli` |
+| **Implementation** | Repo root `./gitlab-cli` |
 | **Mode globals** | `TTY`, `QUIET`, `JSON`, `DEBUG`, `FORCE`, `FORCE_REINSTALL` |
 | **TTY init** | `[ -t 0 ] && [ -t 1 ] && TTY=1` near config block |
 | **Flag parse SSOT** | `app_main` |
@@ -223,7 +223,7 @@ This dual policy is intentional: **pipe install proceeds**; **destructive uninst
 
 ## 5. Definition of done (shell interactive vs non-interactive)
 
-Mode-related work for gitlab-nginx is **not done** if any of the following fail:
+Mode-related work for gitlab-cli is **not done** if any of the following fail:
 
 1. No code path blocks on `read` under `--json`, `--quiet`, or non-TTY (except documented `INTERACTIVE=1` value prompt).  
 2. Destructive uninstall without `--force` does not silently proceed in non-interactive mode.  
@@ -245,7 +245,7 @@ Mode-related work for gitlab-nginx is **not done** if any of the following fail:
 | `docs/requirements/requirement-shell-self-management.md` | Uninstall confirm / force policy |
 | `docs/requirements/requirement-shell-idempotency.md` | Re-run safety under automation |
 | `docs/requirements/index.md` | Registry SSOT |
-| `./gitlab-nginx` | Implementation under test |
+| `./gitlab-cli` | Implementation under test |
 
 ---
 
@@ -266,5 +266,5 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 **Map:** `reviews/test-plan.md`.
 
 **Last Updated**: 2026-09-06  
-**Owner**: gitlab-nginx project maintainers  
+**Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

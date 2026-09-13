@@ -19,15 +19,15 @@ run_test_cli() {
     # --- syntax ---
     sh -n "${SCRIPT}"
     _syn=$?
-    assert_eq "sh -n gitlab-nginx (syntax)" 0 "$_syn"
+    assert_eq "sh -n gitlab-cli (syntax)" 0 "$_syn"
 
     # --- companion digest matches ship unit ---
-    if [ -f "${REPO_ROOT}/gitlab-nginx.sha256" ]; then
-        _expected=$(tr -d ' \n\r\t' < "${REPO_ROOT}/gitlab-nginx.sha256")
+    if [ -f "${REPO_ROOT}/gitlab-cli.sha256" ]; then
+        _expected=$(tr -d ' \n\r\t' < "${REPO_ROOT}/gitlab-cli.sha256")
         _actual=$(sha256sum "${SCRIPT}" | awk '{print $1}')
-        assert_eq "gitlab-nginx.sha256 matches ./gitlab-nginx" "$_expected" "$_actual"
+        assert_eq "gitlab-cli.sha256 matches ./gitlab-cli" "$_expected" "$_actual"
     else
-        t_fail "gitlab-nginx.sha256 missing at repo root"
+        t_fail "gitlab-cli.sha256 missing at repo root"
     fi
 
     # --- version (human) ---
@@ -35,14 +35,14 @@ run_test_cli() {
     _ec=$?
     assert_eq "version exit 0" 0 "$_ec"
     assert_contains "version human mentions version" "$_out" "${PRODUCT_VERSION}"
-    assert_contains "version human mentions app" "$_out" "gitlab-nginx"
+    assert_contains "version human mentions app" "$_out" "gitlab-cli"
 
     # --- version (json) ---
     _out=$(sh "${SCRIPT}" --json version 2>/dev/null)
     _ec=$?
     assert_eq "version --json exit 0" 0 "$_ec"
     assert_contains "version --json type" "$_out" '"type":"version"'
-    assert_contains "version --json app" "$_out" '"app":"gitlab-nginx"'
+    assert_contains "version --json app" "$_out" '"app":"gitlab-cli"'
     assert_contains "version --json version field" "$_out" "\"version\":\"${PRODUCT_VERSION}\""
     # app_version is the live dispatcher target (M1); no dual inline path
     assert_contains "version human via app_version" "$(sh "${SCRIPT}" version 2>/dev/null)" "${PRODUCT_VERSION}"
@@ -75,14 +75,14 @@ run_test_cli() {
     _ec=$?
     assert_eq "about --json exit 0" 0 "$_ec"
     assert_contains "about --json type" "$_out" '"type":"about"'
-    assert_contains "about --json app" "$_out" '"app":"gitlab-nginx"'
+    assert_contains "about --json app" "$_out" '"app":"gitlab-cli"'
     assert_not_contains "about --json must not include CHECKSUM" "$_out" "CHECKSUM"
     assert_contains "about --json effective_storage" "$_out" '"effective_storage"'
     assert_contains "about --json storage_dir" "$_out" '"storage_dir"'
     assert_contains "about --json cache_preferred" "$_out" '"cache_preferred"'
     assert_contains "about --json cache_fallback" "$_out" '"cache_fallback"'
     assert_contains "about --json persistence_storage" "$_out" '"persistence_storage"'
-    assert_contains "about --json storage includes app name" "$_out" "${APP_NAME:-gitlab-nginx}"
+    assert_contains "about --json storage includes app name" "$_out" "${APP_NAME:-gitlab-cli}"
     _out_h=$(sh "${SCRIPT}" about 2>/dev/null)
     assert_contains "about human Cache folder (preferred)" "$_out_h" "Cache folder (preferred):"
     assert_contains "about human Cache folder (fallback)" "$_out_h" "Cache folder (fallback):"
@@ -95,19 +95,19 @@ run_test_cli() {
     if [ -n "${CI_HOME:-}" ]; then
         _out=$(HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN:-${CI_HOME}/.local/bin}" \
             sh "${SCRIPT}" --json about 2>/dev/null)
-        assert_contains "isolated about effective_storage has app" "$_out" "${APP_NAME:-gitlab-nginx}"
+        assert_contains "isolated about effective_storage has app" "$_out" "${APP_NAME:-gitlab-cli}"
         case "$_out" in
-            *'"effective_storage":"'*"${APP_NAME:-gitlab-nginx}"*) t_pass "effective_storage path contains ${APP_NAME:-gitlab-nginx}" ;;
+            *'"effective_storage":"'*"${APP_NAME:-gitlab-cli}"*) t_pass "effective_storage path contains ${APP_NAME:-gitlab-cli}" ;;
             *) t_fail "effective_storage missing app isolation in: $_out" ;;
         esac
         assert_contains "storage_dir field present under isolation" "$_out" '"storage_dir"'
         assert_contains "isolated about persistence_storage field" "$_out" '"persistence_storage"'
         case "$_out" in
-            *'"persistence_storage":"'"${CI_HOME}/.local/${APP_NAME:-gitlab-nginx}"'"'*) \
-                t_pass "persistence_storage is ${CI_HOME}/.local/${APP_NAME:-gitlab-nginx}" ;;
+            *'"persistence_storage":"'"${CI_HOME}/.local/${APP_NAME:-gitlab-cli}"'"'*) \
+                t_pass "persistence_storage is ${CI_HOME}/.local/${APP_NAME:-gitlab-cli}" ;;
             *) t_fail "persistence_storage missing isolated HOME/.local/app path in: $_out" ;;
         esac
-        _persist="${CI_HOME}/.local/${APP_NAME:-gitlab-nginx}"
+        _persist="${CI_HOME}/.local/${APP_NAME:-gitlab-cli}"
         if [ -d "$_persist" ]; then
             t_pass "persistence folder exists after resolve"
         else
@@ -186,7 +186,7 @@ run_test_cli() {
     _errf="${CI_HOME}/zero-arg-err.txt"
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
-        SCRIPT_URL="http://127.0.0.1:1/gitlab-nginx-unreachable" \
+        SCRIPT_URL="http://127.0.0.1:1/gitlab-cli-unreachable" \
         sh "${SCRIPT}" </dev/null 2>"${_errf}"
     )
     _ec=$?
@@ -196,7 +196,7 @@ run_test_cli() {
     else
         t_fail "zero-arg failed install expected non-zero exit, got 0 (stdout='$(_trunc "$_out")' err='$(_trunc "$_err")')"
     fi
-    assert_file_missing "zero-arg failed install left no binary" "${CI_USER_BIN}/gitlab-nginx"
+    assert_file_missing "zero-arg failed install left no binary" "${CI_USER_BIN}/gitlab-cli"
     ci_cleanup_env
 
     # --- self-uninstall --json without force when binary present (isolated) ---
@@ -204,8 +204,8 @@ run_test_cli() {
     ci_isolated_env
     mkdir -p "${CI_USER_BIN}"
     # Place a stub install so uninstall path runs without network
-    cp "${SCRIPT}" "${CI_USER_BIN}/gitlab-nginx"
-    chmod +x "${CI_USER_BIN}/gitlab-nginx"
+    cp "${SCRIPT}" "${CI_USER_BIN}/gitlab-cli"
+    chmod +x "${CI_USER_BIN}/gitlab-cli"
     _errf="${CI_HOME}/un-err.txt"
     _out=$(
         HOME="${CI_HOME}" USER_BIN="${CI_USER_BIN}" GLOBAL_BIN="${CI_GLOBAL_BIN}" \
@@ -217,6 +217,71 @@ run_test_cli() {
     assert_contains "self-uninstall --json confirm_required code" "$_err" '"code":"confirm_required"'
     assert_contains "self-uninstall --json out_error type" "$_err" '"type":"out_error"'
     assert_not_contains "self-uninstall --json must not fake success cancel" "$_out$_err" "cancelled by user"
-    assert_file_exists "binary remains without --force" "${CI_USER_BIN}/gitlab-nginx"
+    assert_file_exists "binary remains without --force" "${CI_USER_BIN}/gitlab-cli"
     ci_cleanup_env
+
+    # --- TP-CLI-16: no $() of prompt_ask / read helpers ---
+    if grep -E '\$\(prompt_|`prompt_' "${SCRIPT}" | grep -v '^[[:space:]]*#' >/dev/null 2>&1; then
+        t_fail "TP-CLI-16 ship unit captures prompt_* with \$()"
+    else
+        t_pass "TP-CLI-16 no \$(prompt_ / backtick prompt_ in ship unit"
+    fi
+
+    # --- help lists menu / GitLab verbs; omits nginx ---
+    _out=$(sh "${SCRIPT}" help 2>/dev/null)
+    assert_contains "help lists list-users" "$_out" "list-users"
+    assert_contains "help lists reset-password" "$_out" "reset-password"
+    assert_contains "help lists menu" "$_out" "menu"
+    assert_contains "help lists main alias" "$_out" "Alias of menu"
+    assert_not_contains "help omits nginx-conf" "$_out" "nginx-conf"
+    assert_not_contains "help omits --no-cloudflare" "$_out" "--no-cloudflare"
+    assert_not_contains "help omits CHECKSUM" "$_out" "CHECKSUM"
+
+    # --- TP-CLI-17 menu off-TTY is human help (not the numbered list) ---
+    _out=$(sh "${SCRIPT}" menu </dev/null 2>/dev/null)
+    _ec=$?
+    assert_eq "TP-CLI-17 menu off-tty exit 0" 0 "$_ec"
+    assert_contains "TP-CLI-17 menu off-tty is help" "$_out" "Usage:"
+    assert_not_contains "TP-CLI-17 menu off-tty no Exit 9 list" "$_out" "9. Exit"
+
+    _out=$(sh "${SCRIPT}" --json menu </dev/null 2>/dev/null)
+    assert_contains "TP-CLI-17 menu --json off-tty JSON help" "$_out" '"type":"success"'
+
+    _out=$(sh "${SCRIPT}" --json </dev/null 2>/dev/null)
+    assert_contains "TP-CLI overlay --json no command is JSON help" "$_out" '"command":"help"'
+    assert_not_contains "TP-CLI overlay --json no command is not Type O path" "$_out" "already installed"
+
+    # --- TP-CLI-17 / TP-CLI-19 TTY numbered list ---
+    _pty_py="${TESTS_ROOT}/helpers/pty_feed.py"
+    _pty_out=""
+    _pty_ok=1
+    if command -v python3 >/dev/null 2>&1 && [ -f "${_pty_py}" ]; then
+        _pty_out=$(MENU_INPUT='9
+' MENU_WAIT='Choice' python3 "${_pty_py}" sh "${SCRIPT}" menu 2>/dev/null)
+        _pty_ok=$?
+    fi
+    if [ "${_pty_ok}" -eq 0 ] && [ -n "${_pty_out}" ] && printf '%s' "${_pty_out}" | grep -q "9. Exit"; then
+        assert_contains "TP-CLI-17 TTY menu has Exit 9" "${_pty_out}" "9. Exit"
+        assert_contains "TP-CLI-17 TTY menu row 1 list-users" "${_pty_out}" "1. list-users:"
+        assert_contains "TP-CLI-17 TTY menu row 2 reset-password" "${_pty_out}" "2. reset-password:"
+        assert_contains "TP-CLI-17 TTY menu header VERSION" "${_pty_out}" "${PRODUCT_VERSION}"
+        assert_contains "TP-CLI-17 TTY menu gray-italic explain" "${_pty_out}" "[3;37m"
+        assert_not_contains "TP-CLI-17 TTY menu omits help as a row" "${_pty_out}" "help: Show this help"
+        assert_not_contains "TP-CLI-17 TTY menu omits install row" "${_pty_out}" "1. install:"
+        assert_not_contains "TP-CLI-17 TTY menu omits setup row" "${_pty_out}" "setup:"
+        assert_not_contains "TP-CLI-17 TTY menu omits version row" "${_pty_out}" "version:"
+        _pty_bad=$(MENU_INPUT='3
+9
+' MENU_WAIT='Choice' python3 "${_pty_py}" sh "${SCRIPT}" menu 2>/dev/null)
+        assert_contains "TP-CLI-19 invalid 3 prints ERROR" "${_pty_bad}" "[ERROR]"
+        assert_contains "TP-CLI-19 invalid 3 reprints list-users" "${_pty_bad}" "1. list-users:"
+        assert_contains "TP-CLI-19 invalid 3 still offers Exit" "${_pty_bad}" "9. Exit"
+        _pty_empty=$(MENU_INPUT='9
+' MENU_WAIT='Choice' python3 "${_pty_py}" sh "${SCRIPT}" 2>/dev/null)
+        assert_contains "TP-CLI-17 TTY empty argv has Exit 9" "${_pty_empty}" "9. Exit"
+        assert_contains "TP-CLI-17 TTY empty argv row 1 list-users" "${_pty_empty}" "1. list-users:"
+    else
+        t_skip "TP-CLI-17 TTY menu numbered list (no PTY)"
+        t_skip "TP-CLI-19 invalid menu choice retry (no PTY)"
+    fi
 }
