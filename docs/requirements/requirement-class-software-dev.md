@@ -122,7 +122,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | Self-management lifecycle | `requirement-shell-self-management` | Do not duplicate |
 | Automatic companion digest | `requirement-shell-automatic-checksum` | Do not duplicate |
 | Output SSOT (`out_*`) | `requirement-shell-output-requirements` | Do not duplicate |
-| Cache folder + persistence folder resolve | `requirement-shell-cli-storage` | Do not duplicate |
+| Per-login per-process cache folder + persistence storage | `requirement-shell-cli-storage` | Do not duplicate |
 | Idempotency / re-run safety | `requirement-shell-idempotency` | Do not duplicate |
 | Interactive vs non-interactive | `requirement-shell-interactive-vs-noninteractive` | Do not duplicate |
 | Modular prefixes / single-file layout | `requirement-shell-modular-function-design` | Do not duplicate |
@@ -192,7 +192,7 @@ This file is **class law + residual SSOT**, not a second copy of Type 0 lifecycl
 | `requirement-shell-self-management` | Lifecycle |
 | `requirement-shell-automatic-checksum` | Companion integrity |
 | `requirement-shell-output-requirements` | `out_*` SSOT |
-| `requirement-shell-cli-storage` | Cache folder + persistence folder resolve |
+| `requirement-shell-cli-storage` | Per-login per-process cache folder + persistence storage |
 | `requirement-shell-idempotency` | Re-run safety |
 | `requirement-shell-interactive-vs-noninteractive` | Mode policy |
 | `requirement-shell-modular-function-design` | Prefixes / single-file modularity |

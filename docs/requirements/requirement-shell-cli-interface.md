@@ -1,5 +1,5 @@
 **file**: docs/requirements/requirement-shell-cli-interface.md  
-**Status**: Active (Version 1.0.0)  
+**Status**: Active (Version 1.0.1)  
 **Philosophy**: CIAO / CIAO-Lite (Caution • Intentional • Anti-fragile • Over-engineered)
 
 ## 1. Purpose
@@ -106,7 +106,7 @@ In JSON mode, help **MUST NOT** dump long human text; return a short structured 
 | **Primary executable** | Repo root `./gitlab-cli` (POSIX `/bin/sh`, single-file for `curl \| sh`) |
 | **Dispatcher** | `app_main` (always invoked at end of script: `app_main "$@"` — no `${0##*/}` / APP_NAME basename gate; required for `curl \| sh`) |
 | **Output SSOT** | `out_text` + wrappers (`out_info`, `out_success`, `out_warn`, `out_error`, `out_die`, `out_plain`, `out_json`, …) |
-| **Version SSOT** | `VERSION` hard-assign in script config block (`VERSION="1.0.0"`) |
+| **Version SSOT** | `VERSION` hard-assign in script config block (`VERSION="1.0.1"`) |
 | **Install paths** | Global: `GLOBAL_BIN` default `/usr/local/bin`; User: `USER_BIN` default `${HOME}/.local/bin` |
 | **Remote channel env (help surface)** | `REPO_USER` / `REPO_NAME` (defaults `cloudgen` / `gitlab-cli`); `SCRIPT_URL` composed default `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/main/${APP_NAME}` (literal product default: `https://raw.githubusercontent.com/cloudgen/gitlab-cli/main/gitlab-cli`; override via env). **`help` / `about` MUST list these operator channel vars as designed — MUST NOT list `CHECKSUM`** |
 | **Admin-privilege commands** | Named here; **owned** by `requirement-domain-gitlab-cli`: `list-users`, `reset-password`, `status`, `setup`, `remove-lpu` |
@@ -120,7 +120,7 @@ In JSON mode, help **MUST NOT** dump long human text; return a short structured 
 | *(no args — empty argv)* | Type 0 | `app_main` | **TTY=1:** numbered list (`app_main_menu`). **TTY=0:** Type O install-ensure. **`--json` no command:** JSON help. See `requirement-shell-cli-zero-arguments.md` |
 | `install` | Type 0 | `inst_perform_install` | Install binary for current privilege (root→global, user→local); idempotent unless force reinstall |
 | `version` | Type 0 | `app_version` | Print local version; JSON object when `--json` |
-| `about` | Type 0 | `app_about` | Diagnostics: install presence, GitLab tools, cache/persistence; JSON when `--json`; **no `CHECKSUM` field** |
+| `about` | Type 0 | `app_about` | Diagnostics: install presence, GitLab tools; **Cache folder used**, **preferred**, **1st fallback**, **2nd fallback** when that host has one, and **Persistence storage** (`requirement-shell-cli-storage` 1.2.0); JSON when `--json`; **no `CHECKSUM` field** |
 | `version-check` | Type 0 | `ver_check` | Compare local vs remote `VERSION` from `SCRIPT_URL` |
 | `self-update` | Type 0 | `inst_self_update` | Fetch remote version; reinstall when policy allows |
 | `self-uninstall` | Type 0 | `inst_self_uninstall` | Remove managed binary |
@@ -242,6 +242,6 @@ When this program runs on Termux, Git Bash, Windows Command Prompt, or the same 
 
 **Map:** `reviews/test-plan.md`.
 
-**Last Updated**: 2026-09-06  
+**Last Updated**: 2026-09-27 (1.0.1 about cache lines point at storage 1.2.0)  
 **Owner**: gitlab-cli project maintainers  
 **Alignment**: Registry `docs/requirements/index.md`; CIAO Principles 1, 2, 3, 5, 6, 10, 16, 4, 20 (v2.10.2) (https://github.com/cloudgen/ciao); CIAO-Lite (https://github.com/cloudgen/ciao-lite).

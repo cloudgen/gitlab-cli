@@ -1,6 +1,6 @@
 # gitlab-cli - GitLab operator CLI (list users, reset passwords)
 
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0.1-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 [![CIAO](https://img.shields.io/badge/Philosophy-CIAO%20(Caution%20%E2%80%A2%20Intentional%20%E2%80%A2%20Anti--fragile%20%E2%80%A2%20Over--engineered)-purple.svg)](https://github.com/cloudgen/ciao)
 [![Stars](https://img.shields.io/github/stars/cloudgen/gitlab-cli?style=flat-square)](https://github.com/cloudgen/gitlab-cli)
@@ -74,7 +74,7 @@ On a **real terminal**, running with **no arguments** (or `gitlab-cli menu`) ope
 
 ```text
 $ gitlab-cli
-[INFO] **gitlab-cli**(*1.0.0*) — numbered list of live work commands
+[INFO] **gitlab-cli**(*1.0.1*) — numbered list of live work commands
 1. list-users: List GitLab users
 2. reset-password: Reset a GitLab user password (numbered list first)
 3. status: Show gitlab-ctl status
@@ -110,7 +110,7 @@ gitlab-cli [command] [options]
 | `menu` (alias `main`) | You | Same numbered list on a terminal; help in a script |
 | `install` | You (root → global path) | Place the CLI binary |
 | `version` | You | Print version |
-| `about` | You | Diagnostics (install + cache/persistence folders + GitLab tools) |
+| `about` | You | Diagnostics (install, cache folder, persistence storage, GitLab tools) |
 | `help` | You | Full usage |
 | `version-check` | You | Compare local vs channel version |
 | `self-update` | You | Update this program from the channel |
@@ -166,5 +166,7 @@ Contributions are welcome. Open an issue or a pull request. Keep install, checks
 MIT License. See [LICENSE.md](LICENSE.md).
 
 ## Last Update
+
+2026-09-27 — **1.0.1**: cache folder is per login and per process (Linux `/dev/shm/cache`, then `/tmp/cache`, then `~/.cache`). `about` names the folder in use and each fallback. Persistence stays `~/.local/gitlab-cli`.
 
 2026-09-13 — **1.0.0**: gitlab-cli public baseline. Stripped from gitlab-nginx (no external Nginx / Certbot). Numbered main menu on a real terminal; `list-users` and `reset-password`.

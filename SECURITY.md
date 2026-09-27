@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| **1.0.0** (current) | Yes — full support |
+| **1.0.1** (current) | Yes — full support |
+| **1.0.0** | Yes |
 | gitlab-nginx 2.x lineage | Not this product; this CLI is a stripped GitLab-operator fork |
 
 ## Reporting a Vulnerability

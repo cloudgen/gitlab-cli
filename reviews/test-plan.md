@@ -5,12 +5,12 @@ Maps **portable TP families** (proof molds) and product domain cases to product-
 | Field | Value |
 |-------|--------|
 | **Product** | gitlab-cli |
-| **Ship unit** | `./gitlab-cli` · `VERSION=1.0.0` |
+| **Ship unit** | `./gitlab-cli` · `VERSION=1.0.1` |
 | **Companion** | `./gitlab-cli.sha256` |
 | **Suite entry** | `./tests/run.sh` |
 | **Live law** | **14** Active REQs — `docs/requirements/index.md` |
 | **Bootstrap origin** | selfmanaged Type 0; stripped from gitlab-nginx |
-| **Last update** | 2026-09-13 (1.0.0) |
+| **Last update** | 2026-09-27 (1.0.1 cache folder) |
 
 Status: **have** = automated · **todo** = needed · **n/a** = not applicable · **optional** = gated (root/host)
 
@@ -33,6 +33,7 @@ Status: **have** = automated · **todo** = needed · **n/a** = not applicable ·
 | Date | Result | Notes |
 |------|--------|-------|
 | 2026-09-13 | **PASS=189 FAIL=0 SKIP=0** | 1.0.0 gitlab-cli strip + menu + list-users / reset-password |
+| 2026-09-27 | **PASS=212 FAIL=0 SKIP=0** | 1.0.1 per-login per-process cache folder |
 
 **How to re-baseline:** `cd` product root → `./tests/run.sh` → paste summary into this table when law/suite changes.
 
@@ -45,8 +46,8 @@ Status: **have** = automated · **todo** = needed · **n/a** = not applicable ·
 | TP-CLI-01 | Syntax + companion digest | **have** | `sh -n`; `gitlab-cli.sha256` |
 | TP-CLI-02 | Version human + JSON | **have** | app/version fields |
 | TP-CLI-03 | Help Type 0; no CHECKSUM | **have** | test_cli |
-| TP-CLI-04 | About JSON + cache/persistence fields | **have** | cache_preferred / persistence_storage |
-| TP-CLI-05 | Cache + persistence isolation under HOME | **have** | test_cli |
+| TP-CLI-04 | About JSON cache_used / cache_preferred / cache_fallback / cache_fallback_2 / persistence_storage + human Cache folder used, preferred, 1st, 2nd + Persistence storage | **have** | test_cli |
+| TP-CLI-05 | Linux preferred `/dev/shm/cache/cache-${APP_NAME}-${login}-$$`; Git Bash and Mac chains; silent skip of preferred; leaf mode 0700; persistence `${HOME}/.local/${APP_NAME}`; not a ram-drive project path | **have** | test_cli |
 | TP-CLI-06 | Unknown command fail-closed | **have** | exit 1 + out_error |
 | TP-CLI-07 | quiet / env -u HOME | **have** | test_cli |
 | TP-CLI-08 | Zero-arg failed install non-zero | **have** | bad SCRIPT_URL + isolate |

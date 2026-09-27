@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-09-27
+
+### Changed
+- **Cache folder.** Each login and each process gets its own leaf. Linux: `/dev/shm/cache/cache-gitlab-cli-${login}-$$`, then `/tmp/cache/cache-gitlab-cli-${login}-$$`, then `${HOME}/.cache/cache-gitlab-cli-$$`. Git Bash: `/tmp/cache/cache-gitlab-cli-${login}-$$`, then `${HOME}/AppData/Local/Temp/cache-gitlab-cli-$$`. Mac: `/tmp/cache/cache-gitlab-cli-${login}-$$`, then `${HOME}/Library/Caches/cache-gitlab-cli-$$`, then `${HOME}/cache/cache-gitlab-cli-$$`. Skipping a tier prints no warning and no error. `about` prints **Cache folder used**, **preferred**, **1st fallback**, and **2nd fallback** when that host has one, plus **Persistence storage** `${HOME}/.local/gitlab-cli`. Law: `requirement-shell-cli-storage` **1.2.0**. Suite **TP-CLI-04** · **TP-CLI-05**.
+
 ## [1.0.0] - 2026-09-13
 
 ### Added

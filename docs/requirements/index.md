@@ -5,7 +5,7 @@
 **Class law:** `requirement-class-software-dev` / **`RQ-CLASS-SOFTWARE-DEV`**.  
 **Domain SSOT:** `requirement-domain-gitlab-cli` / **`RQ-DOMAIN-GITLAB-CLI`**.  
 **Bootstrap origin:** selfmanaged Type 0 (A→B specialize); product **stripped from gitlab-nginx** (Nginx / Certbot removed).  
-**Updated:** 2026-09-13
+**Updated:** 2026-09-27
 
 | Requirement-ID | Key | Title | Area | Status | Path | Updated |
 |----------------|-----|-------|------|--------|------|---------|
@@ -13,7 +13,7 @@
 | `RQ-SHELL-AUTOMATIC-CHECKSUM` | requirement-shell-automatic-checksum | Automatic companion-digest integrity (transparent link/value/result; CHECKSUM not help/about) | shell | Active | `requirement-shell-automatic-checksum.md` | 2026-09-13 |
 | `RQ-SHELL-CLI-INTERFACE` | requirement-shell-cli-interface | Shell CLI interface (commands, flags, dispatch, modes) | shell | Active | `requirement-shell-cli-interface.md` | 2026-09-13 |
 | `RQ-SHELL-CLI-DEFAULT-INTERACTION` | requirement-shell-cli-default-interaction | TTY numbered list (empty argv overlay + menu/main; invalid choice retries) | shell | Active | `requirement-shell-cli-default-interaction.md` | 2026-09-13 |
-| `RQ-SHELL-CLI-STORAGE` | requirement-shell-cli-storage | Cache folder + persistence folder resolve (per-user isolation, main wire, about fields) | shell | Active | `requirement-shell-cli-storage.md` | 2026-09-13 |
+| `RQ-SHELL-CLI-STORAGE` | requirement-shell-cli-storage | Per-login per-process cache folder (Linux shm → tmp → `~/.cache`; Git Bash tmp → AppData; Mac tmp → Library/Caches → `~/cache`) and persistence `${HOME}/.local/${APP_NAME}`; silent tier miss | shell | Active | `requirement-shell-cli-storage.md` | 2026-09-27 |
 | `RQ-SHELL-CLI-ZERO-ARGUMENTS` | requirement-shell-cli-zero-arguments | Empty argv: TTY numbered list; off-TTY Type O install-ensure; `--json` JSON help | shell | Active | `requirement-shell-cli-zero-arguments.md` | 2026-09-13 |
 | `RQ-DOMAIN-GITLAB-CLI` | requirement-domain-gitlab-cli | GitLab operator domain (list-users/reset-password/status/setup/remove-lpu; help + about pillars) | domain | Active | `requirement-domain-gitlab-cli.md` | 2026-09-13 |
 | `RQ-SHELL-IDEMPOTENCY` | requirement-shell-idempotency | Shell idempotency / re-run safety for ensure-style ops | shell | Active | `requirement-shell-idempotency.md` | 2026-09-13 |
